@@ -1,0 +1,152 @@
+{
+  "timestamp": "2025-07-16T16:46:05.427Z",
+  "bundle": {
+    "timestamp": "2025-07-16T16:45:20.790Z",
+    "chunks": [
+      {
+        "name": "vendors-a7ffd50b9397a8e1.js",
+        "size": 803435,
+        "sizeFormatted": "784.6 KB"
+      },
+      {
+        "name": "framework-7c95b8e5103c9e90.js",
+        "size": 182720,
+        "sizeFormatted": "178.44 KB"
+      },
+      {
+        "name": "bc9e92e6-43027290d26d0a07.js",
+        "size": 179899,
+        "sizeFormatted": "175.68 KB"
+      },
+      {
+        "name": "4bd1b696-cf72ae8a39fa05aa.js",
+        "size": 172729,
+        "sizeFormatted": "168.68 KB"
+      },
+      {
+        "name": "polyfills-42372ed130431b0a.js",
+        "size": 112594,
+        "sizeFormatted": "109.96 KB"
+      },
+      {
+        "name": "ae6eea6a-a5fa96dccd56e671.js",
+        "size": 86892,
+        "sizeFormatted": "84.86 KB"
+      },
+      {
+        "name": "app/dashboard/page-654c28ee44b6885c.js",
+        "size": 82231,
+        "sizeFormatted": "80.3 KB"
+      },
+      {
+        "name": "app/page-ea952c76fe9cf975.js",
+        "size": 32181,
+        "sizeFormatted": "31.43 KB"
+      },
+      {
+        "name": "common-82aaa24fb40a32bc.js",
+        "size": 18430,
+        "sizeFormatted": "18 KB"
+      },
+      {
+        "name": "app/layout-25d21c06d735a912.js",
+        "size": 9755,
+        "sizeFormatted": "9.53 KB"
+      },
+      {
+        "name": "app/share/[shareId]/page-91a0e53abd955966.js",
+        "size": 7512,
+        "sizeFormatted": "7.34 KB"
+      },
+      {
+        "name": "webpack-ad20dfe80b2f9353.js",
+        "size": 3578,
+        "sizeFormatted": "3.49 KB"
+      },
+      {
+        "name": "main-app-de53f7d6f84ae964.js",
+        "size": 547,
+        "sizeFormatted": "547 Bytes"
+      },
+      {
+        "name": "634.09b66d8e2833c230.js",
+        "size": 459,
+        "sizeFormatted": "459 Bytes"
+      },
+      {
+        "name": "pages/_app-104b630751c2d95d.js",
+        "size": 239,
+        "sizeFormatted": "239 Bytes"
+      },
+      {
+        "name": "app/_not-found/page-43d035d86eb448cc.js",
+        "size": 229,
+        "sizeFormatted": "229 Bytes"
+      },
+      {
+        "name": "pages/_error-d8518bf7171ce2cf.js",
+        "size": 224,
+        "sizeFormatted": "224 Bytes"
+      },
+      {
+        "name": "app/sign-in/[[...sign-in]]/loading-853af42811b44463.js",
+        "size": 122,
+        "sizeFormatted": "122 Bytes"
+      },
+      {
+        "name": "app/sign-in/[[...sign-in]]/page-74a4f9fd35e2cc8a.js",
+        "size": 122,
+        "sizeFormatted": "122 Bytes"
+      },
+      {
+        "name": "app/sign-up/[[...sign-up]]/page-0b74373f69ca83a9.js",
+        "size": 122,
+        "sizeFormatted": "122 Bytes"
+      },
+      {
+        "name": "app/api/stripe/create-checkout-session/route-94265eca2dfe3a69.js",
+        "size": 122,
+        "sizeFormatted": "122 Bytes"
+      },
+      {
+        "name": "app/api/stripe/create-portal-session/route-917fe79e899c127f.js",
+        "size": 122,
+        "sizeFormatted": "122 Bytes"
+      },
+      {
+        "name": "app/api/stripe/webhook/route-e56bca33abbba79d.js",
+        "size": 122,
+        "sizeFormatted": "122 Bytes"
+      },
+      {
+        "name": "app/api/rotation-reminders/check/route-9268795e144a3c16.js",
+        "size": 121,
+        "sizeFormatted": "121 Bytes"
+      },
+      {
+        "name": "main-39a1c4f7b275c5ed.js",
+        "size": 118,
+        "sizeFormatted": "118 Bytes"
+      }
+    ],
+    "totalSize": 1694625,
+    "jsSize": 1694625,
+    "cssSize": 0,
+    "totalSizeFormatted": "1.62 MB",
+    "jsSizeFormatted": "1.62 MB",
+    "cssSizeFormatted": "0 Bytes"
+  },
+  "lighthouse": null,
+  "recommendations": [
+    {
+      "type": "bundle-size",
+      "severity": "high",
+      "message": "Bundle size is large (>1MB). Consider code splitting and tree shaking."
+    },
+    {
+      "type": "js-size",
+      "severity": "medium",
+      "message": "JavaScript bundle is large (>500KB). Consider lazy loading and dynamic imports."
+    }
+  ]
+}
