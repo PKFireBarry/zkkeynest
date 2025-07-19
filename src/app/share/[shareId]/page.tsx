@@ -20,8 +20,9 @@ const obfuscateValue = (value: string): string => {
   if (!value) return '';
   // Show first 4 characters and replace the rest with asterisks
   const visibleChars = 4;
-  const prefix = value.substring(0, visibleChars);
-  const suffix = '*'.repeat(Math.min(8, value.length - visibleChars)); // Use at least 8 asterisks for visual consistency
+  const prefix = value.substring(0, Math.min(visibleChars, value.length));
+  const remainingChars = Math.max(0, value.length - visibleChars);
+  const suffix = '*'.repeat(Math.min(8, remainingChars)); // Use at least 8 asterisks for visual consistency
   return `${prefix}${suffix}`;
 };
 

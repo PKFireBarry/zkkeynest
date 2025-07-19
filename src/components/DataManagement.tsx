@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import ConfirmationModal from './ConfirmationModal';
+import { useSubscription } from '@/hooks/useSubscription';
 import { 
   Database, 
   Shield, 
@@ -29,6 +30,7 @@ interface DataManagementProps {
 
 export default function DataManagement({ onRefresh }: DataManagementProps) {
   const { user } = useUser();
+  const { hasExportFunctionality } = useSubscription();
   
   const [integrityCheck, setIntegrityCheck] = useState<{
     valid: boolean;
@@ -295,8 +297,10 @@ export default function DataManagement({ onRefresh }: DataManagementProps) {
         </CardContent>
       </Card>
 
-      {/* Backup & Export Section */}
-      <BackupExport onRefresh={onRefresh} />
+      {/* Backup & Export Section - Pro Feature */}
+      {hasExportFunctionality && (
+        <BackupExport onRefresh={onRefresh} />
+      )}
 
       {/* Clear All Data Section */}
       <Card className="border-destructive/20">

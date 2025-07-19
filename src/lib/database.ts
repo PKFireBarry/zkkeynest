@@ -125,14 +125,12 @@ export async function createApiKey(apiKeyData: Omit<ApiKey, 'id' | 'createdAt' |
 
 export async function getApiKeys(userId: string): Promise<ApiKey[]> {
   try {
-    console.log('Getting API keys for user:', userId);
     const apiKeysRef = collection(db, 'apiKeys');
     const q = query(
       apiKeysRef,
       where('userId', '==', userId)
     );
     const querySnapshot = await getDocs(q);
-    console.log('Query snapshot size:', querySnapshot.size);
     const apiKeys: ApiKey[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
@@ -149,7 +147,6 @@ export async function getApiKeys(userId: string): Promise<ApiKey[]> {
       const bTime = b.createdAt instanceof Timestamp ? b.createdAt.toMillis() : 0;
       return bTime - aTime;
     });
-    console.log('Returning API keys:', apiKeys);
     return apiKeys;
   } catch (error) {
     console.error('Error getting API keys:', error);
@@ -275,7 +272,6 @@ export async function clearUserData(uid: string): Promise<void> {
     // Delete all API keys for the user
     const apiKeyDeletePromises = apiKeysSnapshot.docs.map(doc => deleteDoc(doc.ref));
     await Promise.all(apiKeyDeletePromises);
-    console.log(`Deleted ${apiKeysSnapshot.size} API keys for user ${uid}`);
     
     // Then, get all shares created by the user
     const sharesRef = collection(db, 'shares');
@@ -285,12 +281,10 @@ export async function clearUserData(uid: string): Promise<void> {
     // Delete all shares created by the user
     const shareDeletePromises = sharesSnapshot.docs.map(doc => deleteDoc(doc.ref));
     await Promise.all(shareDeletePromises);
-    console.log(`Deleted ${sharesSnapshot.size} shares for user ${uid}`);
     
     // Finally, delete the user document
     const userRef = doc(db, 'users', uid);
     await deleteDoc(userRef);
-    console.log('User data cleared successfully');
   } catch (error) {
     console.error('Error clearing user data:', error);
     throw error;
@@ -309,13 +303,11 @@ export function dateToTimestamp(date: Date): Timestamp {
 // Share operations
 export async function createShare(shareData: Omit<Share, 'id' | 'createdAt'>): Promise<string> {
   try {
-    console.log('Creating share with data:', shareData);
     const sharesRef = collection(db, 'shares');
     const docRef = await addDoc(sharesRef, {
       ...shareData,
       createdAt: serverTimestamp(),
     });
-    console.log('Share created successfully with ID:', docRef.id);
     return docRef.id;
   } catch (error) {
     console.error('Error creating share:', error);
@@ -362,7 +354,6 @@ export async function deleteExpiredShares(): Promise<void> {
     const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
     await Promise.all(deletePromises);
     
-    console.log(`Deleted ${querySnapshot.size} expired shares`);
   } catch (error) {
     console.error('Error deleting expired shares:', error);
     throw error;

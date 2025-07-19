@@ -249,34 +249,6 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
             {/* Welcome Header */}
             <div className="text-center mb-8 sm:mb-12">
               <div className="flex flex-col items-center max-w-4xl w-full gap-6 mx-auto">
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <Badge className="flex items-center gap-2 px-4 py-2 text-sm bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 font-medium">
-                    <Shield className="h-4 w-4" />
-                    Vault Unlocked
-                  </Badge>
-                  
-                  {/* Subscription Status Badge */}
-                  <Badge 
-                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${
-                      hasFolderOrganization 
-                        ? 'bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800'
-                        : 'bg-gray-50 dark:bg-gray-950/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-800'
-                    }`}
-                  >
-                    {hasFolderOrganization ? (
-                      <>
-                        <Crown className="h-4 w-4" />
-                        Pro Plan
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="h-4 w-4" />
-                        Free Plan
-                      </>
-                    )}
-                  </Badge>
-                </div>
-                
                 <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
                   Welcome back, <span className="bg-gradient-to-r from-[#6366f1] to-[#a21caf] bg-clip-text text-transparent">{user?.firstName || 'User'}</span>!
                 </h1>
@@ -284,6 +256,48 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
                 <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
                   Your secure API key vault is unlocked and ready to use.
                 </p>
+
+                {/* Session Timer - moved below welcome message */}
+                <SessionTimeoutTimer />
+
+                {/* Status Badges - centered on desktop, cohesive row on mobile */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
+                  <div className="flex flex-row sm:flex-row items-center gap-3 sm:gap-3">
+                    <Badge className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 font-medium">
+                      <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+                      Vault Unlocked
+                    </Badge>
+
+                    {/* Subscription Status Badge */}
+                    <Badge 
+                      className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium ${
+                        hasFolderOrganization 
+                          ? 'bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800'
+                          : 'bg-gray-50 dark:bg-gray-950/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-800'
+                      }`}
+                    >
+                      {hasFolderOrganization ? (
+                        <>
+                          <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Pro Plan
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Free Plan
+                        </>
+                      )}
+                    </Badge>
+
+                    {/* Usage Display */}
+                    <Badge className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800 font-medium">
+                      <span className="text-muted-foreground">Usage:</span>
+                      <span className="font-medium text-xs sm:text-sm">
+                        {hasFolderOrganization ? 'Unlimited' : `${apiKeysCount} keys`}
+                      </span>
+                    </Badge>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -292,33 +306,19 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
               <AddApiKeyForm
                 onSuccess={handleAddSuccess}
                 onCancel={() => setShowAddForm(false)}
+                onShowBilling={() => onViewChange('billing')}
               />
             ) : (
               <div className="space-y-6">
                 {/* API Keys Header Card */}
                 <Card className="bg-card border-border shadow-sm rounded-xl hover:shadow-lg transition-shadow duration-200">
-                  <CardContent className="p-6">
+                  <CardContent className="">
                     <div className="space-y-4">
-                      {/* Header and Description */}
-                      <div>
-                        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-foreground">API Keys</h2>
-                        <p className="text-muted-foreground text-sm sm:text-base">
-                          Store and manage your API keys securely with zero-knowledge encryption.
-                        </p>
-                      </div>
-                      
-                      {/* Usage Display */}
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-muted-foreground">Usage:</span>
-                        <Badge variant="secondary" className="font-medium">
-                          {apiKeysCount} keys
-                        </Badge>
-                      </div>
-                      
+
                       {/* Controls Row - View Mode and Add Button */}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-2">
                         {/* Left side - View Mode Toggle (Pro Feature) */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center p-2 gap-4">
                           {hasFolderOrganization && (
                             <>
                               <div className="text-sm font-semibold text-foreground">View Mode:</div>
@@ -349,6 +349,8 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
                             </>
                           )}
                         </div>
+
+                        
                         
                         {/* Right side - Add API Key Button */}
                         <Button 
@@ -434,34 +436,6 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
             {/* Welcome Header */}
             <div className="text-center mb-8 sm:mb-12">
               <div className="flex flex-col items-center max-w-4xl w-full gap-6 mx-auto">
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <Badge className="flex items-center gap-2 px-4 py-2 text-sm bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 font-medium">
-                    <Shield className="h-4 w-4" />
-                    Vault Unlocked
-                  </Badge>
-                  
-                  {/* Subscription Status Badge */}
-                  <Badge 
-                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${
-                      hasFolderOrganization 
-                        ? 'bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800'
-                        : 'bg-gray-50 dark:bg-gray-950/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-800'
-                    }`}
-                  >
-                    {hasFolderOrganization ? (
-                      <>
-                        <Crown className="h-4 w-4" />
-                        Pro Plan
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="h-4 w-4" />
-                        Free Plan
-                      </>
-                    )}
-                  </Badge>
-                </div>
-                
                 <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
                   Welcome back, <span className="bg-gradient-to-r from-[#6366f1] to-[#a21caf] bg-clip-text text-transparent">{user?.firstName || 'User'}</span>!
                 </h1>
@@ -469,6 +443,48 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
                 <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
                   Your secure API key vault is unlocked and ready to use.
                 </p>
+
+                {/* Session Timer - moved below welcome message */}
+                <SessionTimeoutTimer />
+
+                {/* Status Badges - centered on desktop, cohesive row on mobile */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
+                  <div className="flex flex-row sm:flex-row items-center gap-3 sm:gap-3">
+                    <Badge className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 font-medium">
+                      <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+                      Vault Unlocked
+                    </Badge>
+
+                    {/* Subscription Status Badge */}
+                    <Badge 
+                      className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium ${
+                        hasFolderOrganization 
+                          ? 'bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800'
+                          : 'bg-gray-50 dark:bg-gray-950/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-800'
+                      }`}
+                    >
+                      {hasFolderOrganization ? (
+                        <>
+                          <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Pro Plan
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Free Plan
+                        </>
+                      )}
+                    </Badge>
+
+                    {/* Usage Display */}
+                    <Badge className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800 font-medium">
+                      <span className="text-muted-foreground">Usage:</span>
+                      <span className="font-medium text-xs sm:text-sm">
+                        {hasFolderOrganization ? 'Unlimited' : `${apiKeysCount} keys`}
+                      </span>
+                    </Badge>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -477,6 +493,7 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
               <AddApiKeyForm
                 onSuccess={handleAddSuccess}
                 onCancel={() => setShowAddForm(false)}
+                onShowBilling={() => onViewChange('billing')}
               />
             ) : (
               <div className="space-y-6">
@@ -485,12 +502,7 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       {/* Header and Description */}
-                      <div>
-                        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-foreground">API Keys</h2>
-                        <p className="text-muted-foreground text-sm sm:text-base">
-                          Store and manage your API keys securely with zero-knowledge encryption.
-                        </p>
-                      </div>
+
                       
                       {/* Usage Display */}
                       <div className="flex items-center gap-2 text-sm">
@@ -570,14 +582,9 @@ function DashboardContentInner({ activeView, onViewChange }: DashboardContentPro
 
   // Vault is unlocked - show main dashboard
   return (
-    <div className="min-h-screen bg-background pt-20 overflow-x-hidden w-full">
+    <div className="min-h-screen bg-background py-10 overflow-x-hidden w-full">
       <main className="w-full px-4 sm:px-6 py-8 sm:py-12 flex flex-col items-center">
         <div className="w-full max-w-6xl mx-auto">
-          {/* Session Timer - positioned at top right */}
-          <div className="mb-6 flex justify-end">
-            <SessionTimeoutTimer />
-          </div>
-          
           {renderMainContent()}
         </div>
       </main>

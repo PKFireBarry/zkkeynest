@@ -1,6 +1,24 @@
-import { SignUp } from "@clerk/nextjs";
+import ClerkLoadingWrapper from "@/components/ClerkLoadingWrapper";
 
 export default function SignUpPage() {
+  const appearance = {
+    elements: {
+      formButtonPrimary: 
+        "bg-gradient-to-r from-[#6366f1] to-[#a21caf] text-white shadow-md hover:opacity-90 transition-opacity",
+      card: "shadow-none bg-transparent",
+      headerTitle: "hidden",
+      headerSubtitle: "hidden",
+      socialButtonsBlockButton: 
+        "bg-background border border-border text-foreground hover:bg-muted transition-colors",
+      formFieldInput: 
+        "bg-background border border-border text-foreground focus:border-[#6366f1] focus:ring-[#6366f1]",
+      formFieldLabel: "text-foreground",
+      footerActionLink: "text-[#6366f1] hover:text-[#a21caf]",
+      dividerLine: "bg-border",
+      dividerText: "text-muted-foreground",
+    },
+  };
+
   return (
     <div className="min-h-screen w-full bg-background flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
@@ -13,27 +31,7 @@ export default function SignUpPage() {
           <p className="text-muted-foreground">Start managing your API keys securely</p>
         </div>
         
-        <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
-          <SignUp 
-            appearance={{
-              elements: {
-                formButtonPrimary: 
-                  "bg-gradient-to-r from-[#6366f1] to-[#a21caf] text-white shadow-md hover:opacity-90 transition-opacity",
-                card: "shadow-none bg-transparent",
-                headerTitle: "hidden",
-                headerSubtitle: "hidden",
-                socialButtonsBlockButton: 
-                  "bg-background border border-border text-foreground hover:bg-muted transition-colors",
-                formFieldInput: 
-                  "bg-background border border-border text-foreground focus:border-[#6366f1] focus:ring-[#6366f1]",
-                formFieldLabel: "text-foreground",
-                footerActionLink: "text-[#6366f1] hover:text-[#a21caf]",
-                dividerLine: "bg-border",
-                dividerText: "text-muted-foreground",
-              },
-            }}
-          />
-        </div>
+        <ClerkLoadingWrapper mode="sign-up" appearance={appearance} />
         
         <div className="text-center mt-6">
           <p className="text-sm text-muted-foreground">

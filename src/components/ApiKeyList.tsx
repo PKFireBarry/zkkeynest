@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Eye, EyeOff, Copy, Trash2, Key, Mail, FileText, Search, Share2, RotateCcw } from 'lucide-react';
+import { Eye, EyeOff, Copy, Trash2, Key, Mail, FileText, Search, Share2, RotateCcw, CheckSquare, Square } from 'lucide-react';
 import { timestampToDate } from '@/lib/database';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -31,8 +31,9 @@ const obfuscateValue = (value: string): string => {
   if (!value) return '';
   // Show first 4 characters and replace the rest with asterisks
   const visibleChars = 4;
-  const prefix = value.substring(0, visibleChars);
-  const suffix = '*'.repeat(Math.min(8, value.length - visibleChars)); // Use at least 8 asterisks for visual consistency
+  const prefix = value.substring(0, Math.min(visibleChars, value.length));
+  const remainingChars = Math.max(0, value.length - visibleChars);
+  const suffix = '*'.repeat(Math.min(8, remainingChars)); // Use at least 8 asterisks for visual consistency
   return `${prefix}${suffix}`;
 };
 
@@ -51,16 +52,16 @@ export default function ApiKeyList({ onRefresh }: ApiKeyListProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<ApiKey | null>(null);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
 
   const loadApiKeys = async () => {
     if (!user) return;
     
     try {
-      console.log('Loading API keys for user:', user.id);
       setIsLoading(true);
       setError('');
       const keys = await getApiKeys(user.id);
-      console.log('Loaded API keys:', keys);
       setApiKeys(keys);
       setFilteredApiKeys(keys); // Initialize filtered keys with all keys
     } catch (err) {
@@ -138,6 +139,56 @@ export default function ApiKeyList({ onRefresh }: ApiKeyListProps) {
     }
   };
 
+  const handleKeySelection = (keyId: string, selected: boolean) => {
+    setSelectedKeys(prev => {
+      const newSet = new Set(prev);
+      if (selected) {
+        newSet.add(keyId);
+      } else {
+        newSet.delete(keyId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedKeys.size === filteredApiKeys.length) {
+      setSelectedKeys(new Set());
+    } else {
+      setSelectedKeys(new Set(filteredApiKeys.map(key => key.id)));
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedKeys.size > 0) {
+      setShowBulkDeleteModal(true);
+    }
+  };
+
+  const handleConfirmBulkDelete = async () => {
+    try {
+      const deletionPromises = Array.from(selectedKeys).map(keyId => deleteApiKey(keyId));
+      await Promise.all(deletionPromises);
+      
+      setApiKeys(prev => prev.filter(key => !selectedKeys.has(key.id)));
+      setFilteredApiKeys(prev => prev.filter(key => !selectedKeys.has(key.id)));
+      setDecryptedKeys(prev => {
+        const newKeys = { ...prev };
+        selectedKeys.forEach(keyId => delete newKeys[keyId]);
+        return newKeys;
+      });
+      setShowKeys(prev => {
+        const newShow = { ...prev };
+        selectedKeys.forEach(keyId => delete newShow[keyId]);
+        return newShow;
+      });
+      setSelectedKeys(new Set());
+      onRefresh?.();
+    } catch (err) {
+      setError('Failed to delete API keys');
+    }
+  };
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
@@ -191,6 +242,43 @@ export default function ApiKeyList({ onRefresh }: ApiKeyListProps) {
           onFilteredKeysChange={setFilteredApiKeys}
         />
       )}
+
+      {/* Bulk Actions Header */}
+      {filteredApiKeys.length > 0 && (
+        <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSelectAll}
+              className="flex items-center gap-2"
+            >
+              {selectedKeys.size === filteredApiKeys.length && filteredApiKeys.length > 0 ? (
+                <CheckSquare className="h-4 w-4" />
+              ) : (
+                <Square className="h-4 w-4" />
+              )}
+              Select All ({filteredApiKeys.length})
+            </Button>
+            {selectedKeys.size > 0 && (
+              <span className="text-sm text-muted-foreground">
+                {selectedKeys.size} selected
+              </span>
+            )}
+          </div>
+          {selectedKeys.size > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Selected ({selectedKeys.size})
+            </Button>
+          )}
+        </div>
+      )}
       
       <div className="grid gap-6">
         {filteredApiKeys.length === 0 ? (
@@ -206,42 +294,56 @@ export default function ApiKeyList({ onRefresh }: ApiKeyListProps) {
         ) : (
           filteredApiKeys.map((apiKey) => (
             <Card key={apiKey.id} className="hover:shadow-lg transition-shadow duration-200">
-              <CardHeader className="p-6">
+              <CardHeader className="px-6">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                  <div className="space-y-2 flex-1 min-w-0">
-                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                      <Key className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">{apiKey.label}</span>
-                    </CardTitle>
-                    <CardDescription className="flex flex-wrap items-center gap-2 text-sm">
-                      <Badge variant="secondary" className="text-xs">{apiKey.service}</Badge>
-                      {apiKey.category && (
-                        <Badge variant="outline" className="text-xs">{apiKey.category}</Badge>
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleKeySelection(apiKey.id, !selectedKeys.has(apiKey.id))}
+                      className="mt-1 p-1 h-6 w-6"
+                    >
+                      {selectedKeys.has(apiKey.id) ? (
+                        <CheckSquare className="h-4 w-4 text-primary" />
+                      ) : (
+                        <Square className="h-4 w-4" />
                       )}
-                      {apiKey.folderId && (
-                        <Badge variant="default" className="text-xs bg-muted-foreground text-background">
-                          {folders.find(f => f.id === apiKey.folderId)?.name || 'Folder'}
-                        </Badge>
-                      )}
-                      {apiKey.tags && apiKey.tags.length > 0 && (
-                        <div className="flex gap-1 flex-wrap">
-                          {apiKey.tags.slice(0, 3).map(tag => (
-                            <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
-                          ))}
-                          {apiKey.tags.length > 3 && (
-                            <Badge variant="secondary" className="text-xs">+{apiKey.tags.length - 3}</Badge>
+                    </Button>
+                      <div className="space-y-2 flex-1 min-w-0">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                          <Key className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">{apiKey.label}</span>
+                        </CardTitle>
+                        <CardDescription className="flex flex-wrap items-center gap-2 text-sm">
+                          <Badge variant="secondary" className="text-xs">{apiKey.service}</Badge>
+                          {apiKey.category && (
+                            <Badge variant="outline" className="text-xs">{apiKey.category}</Badge>
                           )}
-                        </div>
-                      )}
-                      {apiKey.email && (
-                        <span className="flex items-center gap-1 text-xs truncate">
-                          <Mail className="h-3 w-3 flex-shrink-0" />
-                          <span className="truncate">{apiKey.email}</span>
-                        </span>
-                      )}
-                      <RotationReminderBadge reminder={apiKey.rotationReminder} />
-                    </CardDescription>
-                  </div>
+                          {apiKey.folderId && (
+                            <Badge variant="default" className="text-xs bg-muted-foreground text-background">
+                              {folders.find(f => f.id === apiKey.folderId)?.name || 'Folder'}
+                            </Badge>
+                          )}
+                          {apiKey.tags && apiKey.tags.length > 0 && (
+                            <div className="flex gap-1 flex-wrap">
+                              {apiKey.tags.slice(0, 3).map(tag => (
+                                <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
+                              ))}
+                              {apiKey.tags.length > 3 && (
+                                <Badge variant="secondary" className="text-xs">+{apiKey.tags.length - 3}</Badge>
+                              )}
+                            </div>
+                          )}
+                          {apiKey.email && (
+                            <span className="flex items-center gap-1 text-xs truncate">
+                              <Mail className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">{apiKey.email}</span>
+                            </span>
+                          )}
+                          <RotationReminderBadge reminder={apiKey.rotationReminder} />
+                        </CardDescription>
+                      </div>
+                    </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <Dialog open={openDialogId === apiKey.id} onOpenChange={(open) => {
                         if (open) {
@@ -393,6 +495,22 @@ export default function ApiKeyList({ onRefresh }: ApiKeyListProps) {
 
 This action cannot be undone. The encrypted API key will be permanently removed from your vault.`}
         confirmText="Delete API Key"
+        cancelText="Cancel"
+        variant="destructive"
+        delaySeconds={3}
+      />
+
+      <ConfirmationModal
+        isOpen={showBulkDeleteModal}
+        onClose={() => {
+          setShowBulkDeleteModal(false);
+        }}
+        onConfirm={handleConfirmBulkDelete}
+        title="Delete Multiple API Keys"
+        description={`Are you sure you want to delete ${selectedKeys.size} API key${selectedKeys.size === 1 ? '' : 's'}?
+
+This action cannot be undone. The selected encrypted API keys will be permanently removed from your vault.`}
+        confirmText={`Delete ${selectedKeys.size} API Key${selectedKeys.size === 1 ? '' : 's'}`}
         cancelText="Cancel"
         variant="destructive"
         delaySeconds={3}

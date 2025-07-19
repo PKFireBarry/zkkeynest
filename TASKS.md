@@ -44,6 +44,7 @@
 - [x] Implement search and basic filtering
 - [x] Add loading states and error handling
 - [x] Create responsive design for mobile *(All main sections and cards are now fully responsive and consistent across breakpoints)*
+- [x] Improve mobile folder view experience *(Disabled drag and drop on mobile, created compact mobile cards, added mobile folder selection, optimized UI for touch interaction)*
 - [x] Build master password unlock modal
 - [x] Animate the two timers at the bottom of the Hero section so they count up (simulate timers): 20 min and 2 min
 [x] Synchronize and reset the timers in the Hero section based on card animation cycles: OldWay resets after all options, ZKKeynest resets after each key, and ZKKeynest timer is 0-1 min.
@@ -65,6 +66,7 @@
 - [x] Add metadata fields (label, service, email, notes)
 - [x] Implement data validation
 - [x] Create backup/export functionality
+- [x] Implement password-based backup recovery system
 - [x] Add data migration utilities
 - [x] Fix clear data feature to properly delete all user data (API keys and shares)
 

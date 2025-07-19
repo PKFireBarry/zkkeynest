@@ -6,11 +6,12 @@ import { ApiKey, Folder } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, FolderPlus, Search, X, ChevronDown, ChevronUp, Filter } from 'lucide-react';
+import { Plus, FolderPlus, Search, X, ChevronDown, ChevronUp, Filter, FolderOpen } from 'lucide-react';
 import { getFolders, getApiKeys, updateApiKeyFolder, updateFolder, createFolder, deleteFolder, deleteApiKey } from '@/lib/database';
 import DroppableFolder from './DroppableFolder';
 import NoFolderDropZone from './NoFolderDropZone';
 import DraggableApiKeyCard from './DraggableApiKeyCard';
+import MobileApiKeyCard from './MobileApiKeyCard';
 import { useToast } from '@/components/ui/toast';
 import { Badge } from '@/components/ui/badge';
 import ConfirmationModal from './ConfirmationModal';
@@ -44,6 +45,7 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
     const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
     const [isFiltersCollapsed, setIsFiltersCollapsed] = useState(false);
     const [isMobileView, setIsMobileView] = useState(false);
+    const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
 
     // Detect mobile view
     useEffect(() => {
@@ -197,8 +199,9 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
         }
     };
 
-    // Drag and drop handlers
+    // Drag and drop handlers - disabled on mobile
     const handleDragStart = (apiKey: ApiKey) => {
+        if (isMobileView) return; // Disable drag on mobile
         setDraggingApiKey(apiKey);
     };
 
@@ -208,7 +211,7 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
     };
 
     const handleDrop = async (folderId: string | null) => {
-        if (!draggingApiKey) return;
+        if (!draggingApiKey || isMobileView) return; // Disable drop on mobile
 
         try {
             // Update the API key's folder
@@ -241,8 +244,10 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
         }
     };
 
-    // Handle touch drop events
+    // Handle touch drop events - disabled on mobile
     useEffect(() => {
+        if (isMobileView) return; // Disable touch drop on mobile
+        
         const handleTouchDrop = (e: CustomEvent) => {
             const { apiKey, folderId } = e.detail;
             if (apiKey && draggingApiKey && apiKey.id === draggingApiKey.id) {
@@ -252,7 +257,7 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
 
         window.addEventListener('touch-drop', handleTouchDrop as EventListener);
         return () => window.removeEventListener('touch-drop', handleTouchDrop as EventListener);
-    }, [draggingApiKey, handleDrop]);
+    }, [draggingApiKey, handleDrop, isMobileView]);
 
     // View API key handler
     const handleViewApiKey = (apiKey: ApiKey) => {
@@ -260,39 +265,37 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
         setOpenDialogId(apiKey.id);
     };
 
-    // Share API key handler - handled by CreateShareModal component
     const handleShareApiKey = () => {
-        // This is just a placeholder since the actual sharing is handled by CreateShareModal
+        // Share functionality would be implemented here
     };
 
-    // Delete API key handler
     const handleDeleteApiKey = (id: string) => {
-        const key = apiKeys.find(k => k.id === id);
-        if (key) {
-            setKeyToDelete(key);
+        const apiKey = apiKeys.find(k => k.id === id);
+        if (apiKey) {
+            setKeyToDelete(apiKey);
             setShowDeleteModal(true);
         }
     };
 
     const handleConfirmDelete = async () => {
         if (!keyToDelete) return;
-        
+
         try {
             await deleteApiKey(keyToDelete.id);
-            setApiKeys(prev => prev.filter(key => key.id !== keyToDelete.id));
-            
+            setApiKeys(apiKeys.filter(k => k.id !== keyToDelete.id));
+
             toast({
-                title: "API Key Deleted",
-                description: "The API key has been deleted successfully.",
+                title: 'API key deleted',
+                description: 'API key has been deleted successfully.'
             });
-            
+
             onRefresh?.();
         } catch (error) {
             console.error('Error deleting API key:', error);
             toast({
-                title: "Error",
-                description: "Failed to delete API key",
-                variant: "destructive"
+                title: 'Error',
+                description: 'Failed to delete API key',
+                variant: 'destructive'
             });
         } finally {
             setShowDeleteModal(false);
@@ -300,27 +303,23 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
         }
     };
 
-    // Count API keys in each folder
+    // Helper functions
     const getApiKeyCountByFolder = (folderId: string | null) => {
         return apiKeys.filter(key => key.folderId === folderId).length;
     };
 
-    // Get API keys for a specific folder
     const getApiKeysInFolder = (folderId: string | null) => {
         return apiKeys.filter(key => key.folderId === folderId);
     };
 
-    // Track which folder is currently open
-    const [openFolderId, setOpenFolderId] = useState<string | null>(null);
-
     // Handle folder click to open/close
     const handleFolderClick = (folderId: string | null) => {
-        if (openFolderId === folderId) {
-            // If clicking the already open folder, close it
-            setOpenFolderId(null);
+        if (selectedFolderId === folderId) {
+            // If clicking the already selected folder, deselect it
+            setSelectedFolderId(null);
         } else {
-            // Otherwise open the clicked folder
-            setOpenFolderId(folderId);
+            // Otherwise select the clicked folder
+            setSelectedFolderId(folderId);
         }
         
         // On mobile, auto-collapse the filters after selecting a folder
@@ -374,64 +373,85 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
                                 Folder Management
                             </CardTitle>
                             <CardDescription>
-                                Organize your API keys by dragging and dropping them into folders
+                                {isMobileView ? 'Organize your API keys by selecting folders' : 'Organize your API keys by dragging and dropping them into folders'}
                             </CardDescription>
                         </div>
-                        {isMobileView && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setIsFiltersCollapsed(!isFiltersCollapsed)}
-                                className="h-8 w-8 p-0"
-                                aria-label={isFiltersCollapsed ? 'Show filters' : 'Hide filters'}
-                            >
-                                {isFiltersCollapsed ? (
-                                    <ChevronDown className="h-4 w-4" />
-                                ) : (
-                                    <ChevronUp className="h-4 w-4" />
-                                )}
-                            </Button>
-                        )}
                     </div>
                 </CardHeader>
                 
-                {/* Collapsed state summary - only shown on mobile when collapsed */}
-                {isMobileView && isFiltersCollapsed && (
+                {/* Mobile Summary - Always visible on mobile */}
+                {isMobileView && (
                     <CardContent className="pt-0">
-                        <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground bg-muted/30 rounded-md p-3">
-                            <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                        <div className="flex items-center justify-between bg-muted/30 rounded-md p-3">
+                            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                                 <span>{folders.length} folders</span>
                                 <span>•</span>
                                 <span>{apiKeys.length} API keys</span>
-                                {openFolderId && (
+                                {selectedFolderId && (
                                     <>
                                         <span>•</span>
                                         <span className="text-primary font-medium truncate max-w-[100px]">
-                                            {openFolderId === 'no-folder' ? 'Unsorted' : folders.find(f => f.id === openFolderId)?.name} open
+                                            {selectedFolderId === 'no-folder' ? 'Unsorted' : folders.find(f => f.id === selectedFolderId)?.name} selected
                                         </span>
                                     </>
                                 )}
                             </div>
-                            <div className="flex items-center gap-2">
-                                {openFolderId && (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setOpenFolderId(null)}
-                                        className="h-6 w-6 p-0 text-xs"
-                                        title="Close folder"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </Button>
-                                )}
+                            {selectedFolderId && (
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => setIsFiltersCollapsed(false)}
-                                    className="h-6 px-2 text-xs"
+                                    onClick={() => setSelectedFolderId(null)}
+                                    className="h-6 w-6 p-0 text-xs"
+                                    title="Clear selection"
                                 >
-                                    Show filters
+                                    <X className="h-3 w-3" />
                                 </Button>
+                            )}
+                        </div>
+                    </CardContent>
+                )}
+                
+                {/* Mobile Folder Selection - Always visible on mobile */}
+                {isMobileView && (
+                    <CardContent>
+                        <div className="mb-4">
+                            <h3 className="text-sm font-medium mb-2">Select Folder:</h3>
+                            <div className="grid grid-cols-2 gap-2">
+                                {/* All Keys Option */}
+                                <Button
+                                    variant={selectedFolderId === null ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleFolderClick(null)}
+                                    className="justify-start h-10 text-xs"
+                                >
+                                    <FolderOpen className="h-3 w-3 mr-1" />
+                                    All ({apiKeys.length})
+                                </Button>
+                                
+                                {/* Unsorted Keys Option */}
+                                <Button
+                                    variant={selectedFolderId === 'no-folder' ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleFolderClick('no-folder')}
+                                    className="justify-start h-10 text-xs"
+                                >
+                                    <FolderOpen className="h-3 w-3 mr-1" />
+                                    Unsorted ({getApiKeyCountByFolder(null)})
+                                </Button>
+                                
+                                {/* Individual Folders */}
+                                {folders.map(folder => (
+                                    <Button
+                                        key={folder.id}
+                                        variant={selectedFolderId === folder.id ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => handleFolderClick(folder.id)}
+                                        className="justify-start h-10 text-xs"
+                                    >
+                                        <FolderOpen className="h-3 w-3 mr-1" />
+                                        {folder.name} ({getApiKeyCountByFolder(folder.id)})
+                                    </Button>
+                                ))}
                             </div>
                         </div>
                     </CardContent>
@@ -503,62 +523,62 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
                         </Button>
                     )}
 
-                    {/* Folders grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-                        {/* No Folder drop zone */}
-                        <div
-                            onClick={() => handleFolderClick('no-folder')}
-                            className={`cursor-pointer transition-all ${openFolderId === 'no-folder' ? 'ring-2 ring-primary shadow-lg' : ''}`}
-                            title="Click to view unfiled API keys"
-                        >
-                            <NoFolderDropZone
-                                apiKeyCount={getApiKeyCountByFolder(null)}
-                                isOver={dragOverFolderId === 'no-folder'}
-                                onDrop={() => handleDrop(null)}
-                            />
-                            {openFolderId === 'no-folder' && (
-                                <div className="absolute top-0 right-0 w-3 h-3 bg-primary rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
-                            )}
-                        </div>
-
-                        {/* Folders */}
-                        {folders.map(folder => (
+                    {/* Desktop Folders grid */}
+                    {!isMobileView && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                            {/* No Folder drop zone */}
                             <div
-                                key={folder.id}
-                                onClick={() => !editingFolderId && handleFolderClick(folder.id)}
-                                className={`cursor-pointer transition-all relative ${openFolderId === folder.id ? 'ring-2 ring-primary shadow-lg' : ''}`}
-                                title="Click to view folder contents"
+                                onClick={() => handleFolderClick('no-folder')}
+                                className={`cursor-pointer transition-all ${selectedFolderId === 'no-folder' ? 'ring-2 ring-primary shadow-lg' : ''}`}
+                                title="Click to view unfiled API keys"
                             >
-                                <DroppableFolder
-                                    folder={folder}
-                                    apiKeyCount={getApiKeyCountByFolder(folder.id)}
-                                    isOver={dragOverFolderId === folder.id}
-                                    onEdit={handleEditFolder}
-                                    onDelete={handleDeleteFolder}
-                                    onDrop={() => handleDrop(folder.id)}
-                                    isEditing={editingFolderId === folder.id}
-                                    editName={editingFolderName}
-                                    onEditNameChange={setEditingFolderName}
-                                    onSaveEdit={handleUpdateFolder}
-                                    onCancelEdit={() => setEditingFolderId(null)}
+                                <NoFolderDropZone
+                                    apiKeyCount={getApiKeyCountByFolder(null)}
+                                    isOver={dragOverFolderId === 'no-folder'}
+                                    onDrop={() => handleDrop(null)}
                                 />
-                                {openFolderId === folder.id && (
+                                {selectedFolderId === 'no-folder' && (
                                     <div className="absolute top-0 right-0 w-3 h-3 bg-primary rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
                                 )}
                             </div>
-                        ))}
-                    </div>
+
+                            {/* Folders */}
+                            {folders.map(folder => (
+                                <div
+                                    key={folder.id}
+                                    onClick={() => !editingFolderId && handleFolderClick(folder.id)}
+                                    className={`cursor-pointer transition-all relative ${selectedFolderId === folder.id ? 'ring-2 ring-primary shadow-lg' : ''}`}
+                                    title="Click to view folder contents"
+                                >
+                                    <DroppableFolder
+                                        folder={folder}
+                                        apiKeyCount={getApiKeyCountByFolder(folder.id)}
+                                        isOver={dragOverFolderId === folder.id}
+                                        onEdit={handleEditFolder}
+                                        onDelete={handleDeleteFolder}
+                                        onDrop={() => handleDrop(folder.id)}
+                                        isEditing={editingFolderId === folder.id}
+                                        editName={editingFolderName}
+                                        onEditNameChange={setEditingFolderName}
+                                        onSaveEdit={handleUpdateFolder}
+                                        onCancelEdit={() => setEditingFolderId(null)}
+                                    />
+                                    {selectedFolderId === folder.id && (
+                                        <div className="absolute top-0 right-0 w-3 h-3 bg-primary rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     {/* Search Results */}
                     {searchTerm.trim() !== '' && (
                         <div className="mb-6 sm:mb-8">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
                                 <div>
-                                    <h3 className="text-base sm:text-lg font-medium">
-                                        Search Results
-                                    </h3>
+                                    <h3 className="text-base sm:text-lg font-medium">Search Results</h3>
                                     <p className="text-xs sm:text-sm text-muted-foreground">
-                                        Found {filteredApiKeys.length} API keys matching "{searchTerm}"
+                                        {filteredApiKeys.length} API keys found
                                     </p>
                                 </div>
                                 <Button variant="outline" size="sm" onClick={() => setSearchTerm('')}>
@@ -566,7 +586,7 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
                                 </Button>
                             </div>
 
-                            <div className="space-y-3 sm:space-y-4 border rounded-md p-3 sm:p-4 bg-muted/20">
+                            <div className="space-y-2 border rounded-md p-3 sm:p-4 bg-muted/20">
                                 {filteredApiKeys.length > 0 ? (
                                     filteredApiKeys.map(apiKey => (
                                         <div key={apiKey.id} className="relative">
@@ -582,19 +602,33 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
                                                     {getFolderName(apiKey)}
                                                 </Badge>
                                             </div>
-                                            <DraggableApiKeyCard
-                                                apiKey={apiKey}
-                                                folders={folders}
-                                                isDragging={draggingApiKey?.id === apiKey.id}
-                                                onView={handleViewApiKey}
-                                                onShare={handleShareApiKey}
-                                                onDelete={handleDeleteApiKey}
-                                                onDragStart={handleDragStart}
-                                                onDragEnd={handleDragEnd}
-                                                openDialogId={openDialogId}
-                                                setOpenDialogId={setOpenDialogId}
-                                                onRefresh={onRefresh}
-                                            />
+                                            {isMobileView ? (
+                                                <MobileApiKeyCard
+                                                    apiKey={apiKey}
+                                                    folders={folders}
+                                                    onView={handleViewApiKey}
+                                                    onShare={handleShareApiKey}
+                                                    onDelete={handleDeleteApiKey}
+                                                    openDialogId={openDialogId}
+                                                    setOpenDialogId={setOpenDialogId}
+                                                    onRefresh={onRefresh}
+                                                />
+                                            ) : (
+                                                <DraggableApiKeyCard
+                                                    apiKey={apiKey}
+                                                    folders={folders}
+                                                    isDragging={draggingApiKey?.id === apiKey.id}
+                                                    onView={handleViewApiKey}
+                                                    onShare={handleShareApiKey}
+                                                    onDelete={handleDeleteApiKey}
+                                                    onDragStart={handleDragStart}
+                                                    onDragEnd={handleDragEnd}
+                                                    openDialogId={openDialogId}
+                                                    setOpenDialogId={setOpenDialogId}
+                                                    onRefresh={onRefresh}
+                                                    isMobileView={isMobileView}
+                                                />
+                                            )}
                                         </div>
                                     ))
                                 ) : (
@@ -606,42 +640,57 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
                         </div>
                     )}
 
-                    {/* Open Folder Content - only shown when not searching */}
-                    {searchTerm.trim() === '' && openFolderId !== null && (
+                    {/* Selected Folder Content - only shown when not searching */}
+                    {searchTerm.trim() === '' && selectedFolderId !== null && (
                         <div className="mb-6 sm:mb-8">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
                                 <div>
                                     <h3 className="text-base sm:text-lg font-medium">
-                                        {openFolderId === 'no-folder'
+                                        {selectedFolderId === 'no-folder'
                                             ? 'Unsorted API Keys'
-                                            : `Folder: ${folders.find(f => f.id === openFolderId)?.name}`}
+                                            : `Folder: ${folders.find(f => f.id === selectedFolderId)?.name}`}
                                     </h3>
                                     <p className="text-xs sm:text-sm text-muted-foreground">
-                                        {getApiKeysInFolder(openFolderId === 'no-folder' ? null : openFolderId).length} API keys
+                                        {getApiKeysInFolder(selectedFolderId === 'no-folder' ? null : selectedFolderId).length} API keys
                                     </p>
                                 </div>
-                                <Button variant="outline" size="sm" onClick={() => setOpenFolderId(null)}>
+                                <Button variant="outline" size="sm" onClick={() => setSelectedFolderId(null)}>
                                     Close Folder
                                 </Button>
                             </div>
 
-                            <div className="space-y-3 sm:space-y-4 border rounded-md p-3 sm:p-4 bg-muted/20">
-                                {getApiKeysInFolder(openFolderId === 'no-folder' ? null : openFolderId).length > 0 ? (
-                                    getApiKeysInFolder(openFolderId === 'no-folder' ? null : openFolderId).map(apiKey => (
-                                        <DraggableApiKeyCard
-                                            key={apiKey.id}
-                                            apiKey={apiKey}
-                                            folders={folders}
-                                            isDragging={draggingApiKey?.id === apiKey.id}
-                                            onView={handleViewApiKey}
-                                            onShare={handleShareApiKey}
-                                            onDelete={handleDeleteApiKey}
-                                            onDragStart={handleDragStart}
-                                            onDragEnd={handleDragEnd}
-                                            openDialogId={openDialogId}
-                                            setOpenDialogId={setOpenDialogId}
-                                            onRefresh={onRefresh}
-                                        />
+                            <div className="space-y-2 border rounded-md p-3 sm:p-4 bg-muted/20">
+                                {getApiKeysInFolder(selectedFolderId === 'no-folder' ? null : selectedFolderId).length > 0 ? (
+                                    getApiKeysInFolder(selectedFolderId === 'no-folder' ? null : selectedFolderId).map(apiKey => (
+                                        isMobileView ? (
+                                            <MobileApiKeyCard
+                                                key={apiKey.id}
+                                                apiKey={apiKey}
+                                                folders={folders}
+                                                onView={handleViewApiKey}
+                                                onShare={handleShareApiKey}
+                                                onDelete={handleDeleteApiKey}
+                                                openDialogId={openDialogId}
+                                                setOpenDialogId={setOpenDialogId}
+                                                onRefresh={onRefresh}
+                                            />
+                                        ) : (
+                                            <DraggableApiKeyCard
+                                                key={apiKey.id}
+                                                apiKey={apiKey}
+                                                folders={folders}
+                                                isDragging={draggingApiKey?.id === apiKey.id}
+                                                onView={handleViewApiKey}
+                                                onShare={handleShareApiKey}
+                                                onDelete={handleDeleteApiKey}
+                                                onDragStart={handleDragStart}
+                                                onDragEnd={handleDragEnd}
+                                                openDialogId={openDialogId}
+                                                setOpenDialogId={setOpenDialogId}
+                                                onRefresh={onRefresh}
+                                                isMobileView={isMobileView}
+                                            />
+                                        )
                                     ))
                                 ) : (
                                     <div className="text-center py-8 text-muted-foreground">
@@ -652,82 +701,207 @@ export default function FolderDragAndDrop({ onRefresh }: FolderDragAndDropProps)
                         </div>
                     )}
 
-                    {/* Unfiled API Keys section - only shown when no folder is open and not searching */}
-                    {searchTerm.trim() === '' && openFolderId === null && (
+                    {/* All API Keys section - only shown when no folder is selected and not searching */}
+                    {searchTerm.trim() === '' && selectedFolderId === null && (
                         <div className="space-y-2">
-                            <h3 className="text-base sm:text-lg font-medium">Unsorted API Keys</h3>
+                            <h3 className="text-base sm:text-lg font-medium">All API Keys</h3>
                             <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-                                Drag and drop these API keys into folders to organize them
+                                {isMobileView ? 'Select a folder above to view specific keys' : 'Drag and drop these API keys into folders to organize them'}
                             </p>
 
-                            <div className="space-y-3 sm:space-y-4">
-                                {getApiKeysInFolder(null).length > 0 ? (
-                                    getApiKeysInFolder(null).map(apiKey => (
-                                        <DraggableApiKeyCard
-                                            key={apiKey.id}
-                                            apiKey={apiKey}
-                                            folders={folders}
-                                            isDragging={draggingApiKey?.id === apiKey.id}
-                                            onView={handleViewApiKey}
-                                            onShare={handleShareApiKey}
-                                            onDelete={handleDeleteApiKey}
-                                            onDragStart={handleDragStart}
-                                            onDragEnd={handleDragEnd}
-                                            openDialogId={openDialogId}
-                                            setOpenDialogId={setOpenDialogId}
-                                            onRefresh={onRefresh}
-                                        />
+                            <div className="space-y-2">
+                                {apiKeys.length > 0 ? (
+                                    apiKeys.map(apiKey => (
+                                        isMobileView ? (
+                                            <MobileApiKeyCard
+                                                key={apiKey.id}
+                                                apiKey={apiKey}
+                                                folders={folders}
+                                                onView={handleViewApiKey}
+                                                onShare={handleShareApiKey}
+                                                onDelete={handleDeleteApiKey}
+                                                openDialogId={openDialogId}
+                                                setOpenDialogId={setOpenDialogId}
+                                                onRefresh={onRefresh}
+                                            />
+                                        ) : (
+                                            <DraggableApiKeyCard
+                                                key={apiKey.id}
+                                                apiKey={apiKey}
+                                                folders={folders}
+                                                isDragging={draggingApiKey?.id === apiKey.id}
+                                                onView={handleViewApiKey}
+                                                onShare={handleShareApiKey}
+                                                onDelete={handleDeleteApiKey}
+                                                onDragStart={handleDragStart}
+                                                onDragEnd={handleDragEnd}
+                                                openDialogId={openDialogId}
+                                                setOpenDialogId={setOpenDialogId}
+                                                onRefresh={onRefresh}
+                                                isMobileView={isMobileView}
+                                            />
+                                        )
                                     ))
                                 ) : (
                                     <div className="text-center py-8 text-muted-foreground border rounded-md">
-                                        No unfiled API keys. All your API keys are organized in folders.
+                                        No API keys found. Add your first API key to get started.
                                     </div>
                                 )}
                             </div>
                         </div>
                     )}
-                        </CardContent>
+                    </CardContent>
                     )}
                 </div>
+                
+                {/* Mobile API Key Content - Always visible on mobile */}
+                {isMobileView && (
+                    <CardContent>
+                        {/* Search Results */}
+                        {searchTerm.trim() !== '' && (
+                            <div className="mb-6 sm:mb-8">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
+                                    <div>
+                                        <h3 className="text-base sm:text-lg font-medium">Search Results</h3>
+                                        <p className="text-xs sm:text-sm text-muted-foreground">
+                                            {filteredApiKeys.length} API keys found
+                                        </p>
+                                    </div>
+                                    <Button variant="outline" size="sm" onClick={() => setSearchTerm('')}>
+                                        Clear Search
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-2 border rounded-md p-3 sm:p-4 bg-muted/20">
+                                    {filteredApiKeys.length > 0 ? (
+                                        filteredApiKeys.map(apiKey => (
+                                            <div key={apiKey.id} className="relative">
+                                                {/* Folder badge */}
+                                                <div className="absolute -top-2 -right-2 z-10">
+                                                    <Badge 
+                                                        className="bg-primary text-primary-foreground hover:bg-primary/80"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleFolderClick(apiKey.folderId || 'no-folder');
+                                                        }}
+                                                    >
+                                                        {getFolderName(apiKey)}
+                                                    </Badge>
+                                                </div>
+                                                <MobileApiKeyCard
+                                                    apiKey={apiKey}
+                                                    folders={folders}
+                                                    onView={handleViewApiKey}
+                                                    onShare={handleShareApiKey}
+                                                    onDelete={handleDeleteApiKey}
+                                                    openDialogId={openDialogId}
+                                                    setOpenDialogId={setOpenDialogId}
+                                                    onRefresh={onRefresh}
+                                                />
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            No API keys match your search
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Selected Folder Content - only shown when not searching */}
+                        {searchTerm.trim() === '' && selectedFolderId !== null && (
+                            <div className="mb-6 sm:mb-8">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
+                                    <div>
+                                        <h3 className="text-base sm:text-lg font-medium">
+                                            {selectedFolderId === 'no-folder'
+                                                ? 'Unsorted API Keys'
+                                                : `Folder: ${folders.find(f => f.id === selectedFolderId)?.name}`}
+                                        </h3>
+                                        <p className="text-xs sm:text-sm text-muted-foreground">
+                                            {getApiKeysInFolder(selectedFolderId === 'no-folder' ? null : selectedFolderId).length} API keys
+                                        </p>
+                                    </div>
+                                    <Button variant="outline" size="sm" onClick={() => setSelectedFolderId(null)}>
+                                        Close Folder
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-2 border rounded-md p-3 sm:p-4 bg-muted/20">
+                                    {getApiKeysInFolder(selectedFolderId === 'no-folder' ? null : selectedFolderId).length > 0 ? (
+                                        getApiKeysInFolder(selectedFolderId === 'no-folder' ? null : selectedFolderId).map(apiKey => (
+                                            <MobileApiKeyCard
+                                                key={apiKey.id}
+                                                apiKey={apiKey}
+                                                folders={folders}
+                                                onView={handleViewApiKey}
+                                                onShare={handleShareApiKey}
+                                                onDelete={handleDeleteApiKey}
+                                                openDialogId={openDialogId}
+                                                setOpenDialogId={setOpenDialogId}
+                                                onRefresh={onRefresh}
+                                            />
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            No API keys in this folder
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* All API Keys section - only shown when no folder is selected and not searching */}
+                        {searchTerm.trim() === '' && selectedFolderId === null && (
+                            <div className="space-y-2">
+                                <h3 className="text-base sm:text-lg font-medium">All API Keys</h3>
+                                <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+                                    Select a folder above to view specific keys
+                                </p>
+
+                                <div className="space-y-2">
+                                    {apiKeys.length > 0 ? (
+                                        apiKeys.map(apiKey => (
+                                            <MobileApiKeyCard
+                                                key={apiKey.id}
+                                                apiKey={apiKey}
+                                                folders={folders}
+                                                onView={handleViewApiKey}
+                                                onShare={handleShareApiKey}
+                                                onDelete={handleDeleteApiKey}
+                                                openDialogId={openDialogId}
+                                                setOpenDialogId={setOpenDialogId}
+                                                onRefresh={onRefresh}
+                                            />
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-8 text-muted-foreground border rounded-md">
+                                            No API keys found. Add your first API key to get started.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                )}
             </Card>
 
+            {/* Confirmation Modals */}
             <ConfirmationModal
                 isOpen={showDeleteModal}
-                onClose={() => {
-                    setShowDeleteModal(false);
-                    setKeyToDelete(null);
-                }}
+                onClose={() => setShowDeleteModal(false)}
                 onConfirm={handleConfirmDelete}
                 title="Delete API Key"
-                description={`Are you sure you want to delete the API key "${keyToDelete?.label}"?
-
-This action cannot be undone. The encrypted API key will be permanently removed from your vault.`}
-                confirmText="Delete API Key"
-                cancelText="Cancel"
-                variant="destructive"
-                delaySeconds={3}
+                description={`Are you sure you want to delete "${keyToDelete?.label}"? This action cannot be undone.`}
             />
 
             <ConfirmationModal
                 isOpen={showDeleteFolderModal}
-                onClose={() => {
-                    setShowDeleteFolderModal(false);
-                    setFolderToDelete(null);
-                }}
+                onClose={() => setShowDeleteFolderModal(false)}
                 onConfirm={handleConfirmDeleteFolder}
                 title="Delete Folder"
-                description={`Are you sure you want to delete the folder "${folderToDelete?.name}"?
-
-⚠️ WARNING: This action will:
-• Permanently delete the folder
-• Move all API keys in this folder to "Unsorted"
-• This cannot be undone
-
-${getApiKeyCountByFolder(folderToDelete?.id || null)} API key${getApiKeyCountByFolder(folderToDelete?.id || null) !== 1 ? 's' : ''} will be moved to the unsorted folder.`}
-                confirmText="Delete Folder"
-                cancelText="Cancel"
-                variant="destructive"
-                delaySeconds={3}
+                description={`Are you sure you want to delete "${folderToDelete?.name}"? All API keys in this folder will be moved to "No Folder".`}
             />
         </div>
     );

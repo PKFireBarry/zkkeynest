@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useVault } from '@/contexts/VaultContext';
 import { createApiKey, getUser, getApiKeys, createFolder, getFolders } from '@/lib/database';
@@ -23,11 +23,12 @@ import { useSubscription } from '@/hooks/useSubscription';
 interface AddApiKeyFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
+  onShowBilling?: () => void;
 }
 
 
 
-export default function AddApiKeyForm({ onSuccess, onCancel }: AddApiKeyFormProps) {
+export default function AddApiKeyForm({ onSuccess, onCancel, onShowBilling }: AddApiKeyFormProps) {
   const { user } = useUser();
   const { encryptKey } = useVault();
   const { hasTagsAndCategories, hasFolderOrganization, isFree } = useSubscription();
@@ -56,6 +57,9 @@ export default function AddApiKeyForm({ onSuccess, onCancel }: AddApiKeyFormProp
   const [envPairs, setEnvPairs] = useState<EnvKeyValue[]>([]);
   const [rawEnvText, setRawEnvText] = useState('');
   const [envError, setEnvError] = useState('');
+  const [existingServices, setExistingServices] = useState<string[]>([]);
+  const [showServiceDropdown, setShowServiceDropdown] = useState(false);
+  const serviceInputRef = useRef<HTMLDivElement>(null);
 
   // Load user's current usage and plan
   useEffect(() => {
@@ -91,6 +95,37 @@ export default function AddApiKeyForm({ onSuccess, onCancel }: AddApiKeyFormProp
       setFolders(userFolders);
     })();
   }, [user]);
+
+  // Load existing services for autocomplete
+  useEffect(() => {
+    const loadExistingServices = async () => {
+      if (!user) return;
+      
+      try {
+        const apiKeys = await getApiKeys(user.id);
+        const services = [...new Set(apiKeys.map(key => key.service).filter(Boolean))];
+        setExistingServices(services);
+      } catch (error) {
+        console.error('Failed to load existing services:', error);
+      }
+    };
+
+    loadExistingServices();
+  }, [user]);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (serviceInputRef.current && !serviceInputRef.current.contains(event.target as Node)) {
+        setShowServiceDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Handle .env file drop or selection
   const handleEnvFile = async (file: File) => {
@@ -349,7 +384,7 @@ export default function AddApiKeyForm({ onSuccess, onCancel }: AddApiKeyFormProp
                 <Button 
                   variant="link" 
                   className="p-0 h-auto text-destructive underline"
-                  onClick={() => window.open('/dashboard?billing=true', '_blank')}
+                  onClick={onShowBilling}
                 >
                   Upgrade to Pro for unlimited storage.
                 </Button>
@@ -389,14 +424,78 @@ export default function AddApiKeyForm({ onSuccess, onCancel }: AddApiKeyFormProp
             
             <div className="space-y-2">
               <Label htmlFor="service">Service *</Label>
-              <Input
-                id="service"
-                value={formData.service}
-                onChange={(e) => handleInputChange('service', e.target.value)}
-                placeholder="e.g., OpenAI, GitHub, Stripe"
-                className="min-h-[44px]"
-                required
-              />
+              <div className="relative" ref={serviceInputRef}>
+                <Input
+                  id="service"
+                  value={formData.service}
+                  onChange={(e) => {
+                    handleInputChange('service', e.target.value);
+                    setShowServiceDropdown(false); // Don't auto-show dropdown when typing
+                  }}
+                  placeholder="e.g., OpenAI, GitHub, Stripe"
+                  className="min-h-[44px] pr-10"
+                  required
+                />
+                {existingServices.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
+                    onClick={() => setShowServiceDropdown(!showServiceDropdown)}
+                    title="Show existing services"
+                  >
+                    <svg
+                      className={`h-4 w-4 transition-transform duration-200 ${
+                        showServiceDropdown ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </Button>
+                )}
+                {showServiceDropdown && existingServices.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-48 overflow-y-auto">
+                    <div className="p-2 text-xs text-muted-foreground border-b">
+                      Previously used services
+                    </div>
+                    {existingServices
+                      .filter(service => 
+                        service.toLowerCase().includes(formData.service.toLowerCase()) &&
+                        service !== formData.service
+                      )
+                      .map((service, index) => (
+                        <button
+                          key={service}
+                          type="button"
+                          className="w-full px-3 py-2 text-left hover:bg-muted focus:bg-muted focus:outline-none"
+                          onClick={() => {
+                            handleInputChange('service', service);
+                            setShowServiceDropdown(false);
+                          }}
+                        >
+                          {service}
+                        </button>
+                      ))}
+                    {existingServices.filter(service => 
+                      service.toLowerCase().includes(formData.service.toLowerCase()) &&
+                      service !== formData.service
+                    ).length === 0 && (
+                      <div className="p-3 text-sm text-muted-foreground text-center">
+                        No matching services found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

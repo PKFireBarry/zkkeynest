@@ -1,5 +1,3 @@
-// loading.tsx for sign-in route
-
 export default function Loading() {
   return (
     <div className="min-h-screen w-full bg-background flex items-center justify-center px-4 py-8">
@@ -9,8 +7,8 @@ export default function Loading() {
             <img src="/logo.png" alt="zKkeynest logo" className="w-8 h-8 rounded-md object-contain" />
             <span className="font-semibold text-xl tracking-tight">zKkeynest</span>
           </div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">Welcome back</h1>
-          <p className="text-muted-foreground">Sign in to access your secure API key vault</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Create your account</h1>
+          <p className="text-muted-foreground">Start managing your API keys securely</p>
         </div>
         
         <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
@@ -21,7 +19,7 @@ export default function Loading() {
             </div>
             <div className="mt-4 text-center">
               <p className="text-sm text-muted-foreground font-medium">
-                Loading sign-in form...
+                Loading sign-up form...
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Please wait while we prepare your secure authentication
@@ -32,9 +30,9 @@ export default function Loading() {
         
         <div className="text-center mt-6">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <a href="/sign-up" className="text-[#6366f1] hover:text-[#a21caf] font-medium">
-              Sign up for free
+            Already have an account?{" "}
+            <a href="/sign-in" className="text-[#6366f1] hover:text-[#a21caf] font-medium">
+              Sign in
             </a>
           </p>
         </div>

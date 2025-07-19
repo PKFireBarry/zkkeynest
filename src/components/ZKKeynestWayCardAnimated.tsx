@@ -65,21 +65,21 @@ export default function ZKKeynestWayCardAnimated({ onCycleComplete }: ZKKeynestW
     return () => clearInterval(interval);
   }, []);
 
-  // Timer animation - resets each cycle
+  // Timer animation - resets for each individual key
   useEffect(() => {
     let timerInterval: NodeJS.Timeout;
 
-    if (optionIndex === 0 && cycleCount > 0 && typed === "") {
-      // Reset timer at start of new cycle
+    // Reset timer when starting to type a new key
+    if (typed === "" && optionIndex !== 0) {
       setTimer(0);
     }
 
-    // Animate timer during the cycle
+    // Animate timer during the individual key cycle
     timerInterval = setInterval(() => {
       setTimer(prev => {
-        const target = 1; // Always target 1 minute per cycle
-        const cycleDuration = (OPTIONS[optionIndex].name.length * 100) + 600 + 2200; // Total cycle time
-        const increment = target / (cycleDuration / 120); // Smooth animation over cycle duration
+        const target = 1; // Always target 1 minute per individual key
+        const keyCycleDuration = (OPTIONS[optionIndex].name.length * 100) + 600 + 2200; // Total time for this key
+        const increment = target / (keyCycleDuration / 120); // Smooth animation over key cycle duration
         if (prev < target) {
           return Math.min(prev + increment, target);
         }
@@ -88,7 +88,7 @@ export default function ZKKeynestWayCardAnimated({ onCycleComplete }: ZKKeynestW
     }, 120);
 
     return () => clearInterval(timerInterval);
-  }, [optionIndex, typed, cycleCount]);
+  }, [optionIndex, typed]);
 
   return (
     <motion.div

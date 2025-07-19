@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { getFolders } from '@/lib/database';
 import { useSubscription } from '@/hooks/useSubscription';
+import { cn } from '@/lib/utils';
 
 interface ApiKeySearchProps {
   apiKeys: ApiKey[];
@@ -26,6 +27,7 @@ export default function ApiKeySearch({ apiKeys, onFilteredKeysChange }: ApiKeySe
   const [selectedFolderId, setSelectedFolderId] = useState<string>('all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
 
   // Get unique services and emails for filter options
   const services = useMemo(() => {
@@ -105,6 +107,16 @@ export default function ApiKeySearch({ apiKeys, onFilteredKeysChange }: ApiKeySe
 
   const hasActiveFilters = searchTerm !== '' || selectedService !== 'all' || selectedEmail !== 'all' || selectedCategory !== 'all' || selectedFolderId !== 'all' || selectedTag !== 'all';
 
+  // Count active filters for badge display
+  const activeFilterCount = [
+    searchTerm !== '',
+    selectedService !== 'all',
+    selectedEmail !== 'all',
+    selectedCategory !== 'all',
+    selectedFolderId !== 'all',
+    selectedTag !== 'all'
+  ].filter(Boolean).length;
+
   return (
     <Card className="mb-6">
       <CardContent className="p-4">
@@ -130,125 +142,151 @@ export default function ApiKeySearch({ apiKeys, onFilteredKeysChange }: ApiKeySe
             )}
           </div>
 
-          {/* Filters */}
-          <div className="flex flex-wrap gap-3 items-center">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Filters:</span>
-            </div>
+          {/* Filter Toggle Button */}
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
+              className="flex items-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              <span>Filters</span>
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-1 text-xs">
+                  {activeFilterCount}
+                </Badge>
+              )}
+              {isFiltersExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
 
-            {/* Service Filter */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Service:</span>
-              <Select value={selectedService && selectedService.trim() !== '' ? selectedService : 'all'} onValueChange={setSelectedService}>
-                <SelectTrigger className="w-40 h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Services</SelectItem>
-                  {services.length > 0 && services
-                    .map(service => {
-                      if (!service || typeof service !== 'string' || service.trim() === '') return null;
-                      return <SelectItem key={service} value={service}>{service}</SelectItem>;
-                    })}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Email Filter */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Email:</span>
-              <Select value={selectedEmail && selectedEmail.trim() !== '' ? selectedEmail : 'all'} onValueChange={setSelectedEmail}>
-                <SelectTrigger className="w-40 h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Emails</SelectItem>
-                  {emails.length > 0 && emails
-                    .map(email => {
-                      if (!email || typeof email !== 'string' || email.trim() === '') return null;
-                      return <SelectItem key={email} value={email}>{email}</SelectItem>;
-                    })}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Category Filter - Pro Feature */}
-            {hasTagsAndCategories && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Category:</span>
-                <Select value={selectedCategory && selectedCategory.trim() !== '' ? selectedCategory : 'all'} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-40 h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {categories.length > 0 && categories
-                      .map(category => {
-                        if (!category || typeof category !== 'string' || category.trim() === '') return null;
-                        return <SelectItem key={category} value={category}>{category}</SelectItem>;
-                      })}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {/* Folder Filter - Pro Feature */}
-            {hasFolderOrganization && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Folder:</span>
-                <Select value={selectedFolderId && selectedFolderId.trim() !== '' ? selectedFolderId : 'all'} onValueChange={setSelectedFolderId}>
-                  <SelectTrigger className="w-40 h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Folders</SelectItem>
-                    {folders.length > 0 && folders
-                      .map(folder => {
-                        if (!folder || typeof folder.id !== 'string' || folder.id.trim() === '') return null;
-                        return <SelectItem key={folder.id} value={folder.id}>{folder.name && folder.name.trim() !== '' ? folder.name : 'Unnamed Folder'}</SelectItem>;
-                      })}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {/* Tag Filter - Pro Feature */}
-            {hasTagsAndCategories && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Tag:</span>
-                <Select value={selectedTag && selectedTag.trim() !== '' ? selectedTag : 'all'} onValueChange={setSelectedTag}>
-                  <SelectTrigger className="w-40 h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Tags</SelectItem>
-                    {tags.length > 0 && tags
-                      .map(tag => {
-                        if (!tag || typeof tag !== 'string' || tag.trim() === '') return null;
-                        return <SelectItem key={tag} value={tag}>{tag}</SelectItem>;
-                      })}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {/* Clear Filters */}
+            {/* Clear Filters Button */}
             {hasActiveFilters && (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="h-8"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-3 w-3 mr-1" />
-                Clear Filters
+                Clear All
               </Button>
             )}
           </div>
 
+          {/* Collapsible Filters */}
+          <div className={cn(
+            "overflow-hidden transition-all duration-300 ease-in-out",
+            isFiltersExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          )}>
+            <div className="space-y-4 pt-2">
+              {/* Filter Grid - Responsive Layout */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {/* Service Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Service</label>
+                  <Select value={selectedService && selectedService.trim() !== '' ? selectedService : 'all'} onValueChange={setSelectedService}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="All Services" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Services</SelectItem>
+                      {services.length > 0 && services
+                        .map(service => {
+                          if (!service || typeof service !== 'string' || service.trim() === '') return null;
+                          return <SelectItem key={service} value={service}>{service}</SelectItem>;
+                        })}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Email Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Email</label>
+                  <Select value={selectedEmail && selectedEmail.trim() !== '' ? selectedEmail : 'all'} onValueChange={setSelectedEmail}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="All Emails" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Emails</SelectItem>
+                      {emails.length > 0 && emails
+                        .map(email => {
+                          if (!email || typeof email !== 'string' || email.trim() === '') return null;
+                          return <SelectItem key={email} value={email}>{email}</SelectItem>;
+                        })}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Category Filter - Pro Feature */}
+                {hasTagsAndCategories && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Category</label>
+                    <Select value={selectedCategory && selectedCategory.trim() !== '' ? selectedCategory : 'all'} onValueChange={setSelectedCategory}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Categories</SelectItem>
+                        {categories.length > 0 && categories
+                          .map(category => {
+                            if (!category || typeof category !== 'string' || category.trim() === '') return null;
+                            return <SelectItem key={category} value={category}>{category}</SelectItem>;
+                          })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Folder Filter - Pro Feature */}
+                {hasFolderOrganization && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Folder</label>
+                    <Select value={selectedFolderId && selectedFolderId.trim() !== '' ? selectedFolderId : 'all'} onValueChange={setSelectedFolderId}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="All Folders" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Folders</SelectItem>
+                        {folders.length > 0 && folders
+                          .map(folder => {
+                            if (!folder || typeof folder.id !== 'string' || folder.id.trim() === '') return null;
+                            return <SelectItem key={folder.id} value={folder.id}>{folder.name && folder.name.trim() !== '' ? folder.name : 'Unnamed Folder'}</SelectItem>;
+                          })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Tag Filter - Pro Feature */}
+                {hasTagsAndCategories && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Tag</label>
+                    <Select value={selectedTag && selectedTag.trim() !== '' ? selectedTag : 'all'} onValueChange={setSelectedTag}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="All Tags" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Tags</SelectItem>
+                        {tags.length > 0 && tags
+                          .map(tag => {
+                            if (!tag || typeof tag !== 'string' || tag.trim() === '') return null;
+                            return <SelectItem key={tag} value={tag}>{tag}</SelectItem>;
+                          })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Results Summary */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>
               Showing {filteredKeys.length} of {apiKeys.length} API keys
             </span>

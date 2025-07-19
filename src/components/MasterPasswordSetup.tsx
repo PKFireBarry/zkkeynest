@@ -65,7 +65,6 @@ export default function MasterPasswordSetup() {
             verificationData.salt,
             verificationData.verificationHash
           );
-          console.log('User unlock password saved to database');
         } catch (dbError) {
           console.error('Failed to save to database:', dbError);
           // Still show success since encryption worked, but warn user

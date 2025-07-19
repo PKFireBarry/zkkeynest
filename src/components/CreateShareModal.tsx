@@ -20,6 +20,7 @@ import { parseEnv } from '@/lib/parseEnv';
 interface CreateShareModalProps {
   apiKey: ApiKey;
   onShareCreated?: () => void;
+  customTrigger?: React.ReactNode;
 }
 
 const EXPIRATION_OPTIONS = [
@@ -35,12 +36,13 @@ const obfuscateValue = (value: string): string => {
   if (!value) return '';
   // Show first 4 characters and replace the rest with asterisks
   const visibleChars = 4;
-  const prefix = value.substring(0, visibleChars);
-  const suffix = '*'.repeat(Math.min(8, value.length - visibleChars)); // Use at least 8 asterisks for visual consistency
+  const prefix = value.substring(0, Math.min(visibleChars, value.length));
+  const remainingChars = Math.max(0, value.length - visibleChars);
+  const suffix = '*'.repeat(Math.min(8, remainingChars)); // Use at least 8 asterisks for visual consistency
   return `${prefix}${suffix}`;
 };
 
-export default function CreateShareModal({ apiKey, onShareCreated }: CreateShareModalProps) {
+export default function CreateShareModal({ apiKey, onShareCreated, customTrigger }: CreateShareModalProps) {
   const { user } = useUser();
   const { decryptKey } = useVault();
   
@@ -185,14 +187,16 @@ export default function CreateShareModal({ apiKey, onShareCreated }: CreateShare
       setIsOpen(open);
     }}>
       <DialogTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="hover:bg-[#6366f1]/5 hover:text-[#6366f1] hover:border-[#6366f1]/20 transition-all duration-200 min-h-[44px] px-4 h-auto w-auto"
-        >
-          <Share2 className="h-4 w-4" />
-          <span className="sr-only sm:not-sr-only sm:ml-2">Share</span>
-        </Button>
+        {customTrigger || (
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="hover:bg-[#6366f1]/5 hover:text-[#6366f1] hover:border-[#6366f1]/20 transition-all duration-200 min-h-[44px] px-4 h-auto w-auto"
+          >
+            <Share2 className="h-4 w-4" />
+            <span className="sr-only sm:not-sr-only sm:ml-2">Share</span>
+          </Button>
+        )}
       </DialogTrigger>
       {/* Use a wider modal for all cases */}
       <DialogContent className="w-full max-w-lg sm:max-w-xl overflow-x-visible p-0">
