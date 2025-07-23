@@ -10,7 +10,7 @@ const securityLayers = [
   {
     icon: Globe,
     title: "Painless Sign-Ins",
-    desc: "Google/GitHub/Slack login—no new accounts to remember.",
+    desc: "Google/GitHub/Slack login-no new accounts to remember.",
     color: "text-blue-500",
     bgColor: "bg-blue-50 dark:bg-blue-950",
     bullets: [
@@ -46,11 +46,10 @@ const securityLayers = [
   {
     icon: Eye,
     title: "Zero-Knowledge",
-    desc: "We can't see or access your secrets—ever.",
+    desc: "We can't see or access your secrets-ever.",
     color: "text-red-500",
     bgColor: "bg-red-50 dark:bg-red-950",
     bullets: [
-      "No server access",
       "Encrypted storage",
       "Complete privacy"
     ]
@@ -109,7 +108,7 @@ export default function EncryptionExplanation() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            Your API keys are protected with multiple layers of security, so only you can access them. We never see your secrets. You stay in control—always.
+            Your API keys are protected with multiple layers of security, so only you can access them. We never see your secrets. You stay in control-always.
           </motion.p>
         </div>
 
@@ -211,7 +210,7 @@ export default function EncryptionExplanation() {
                   <ul className="space-y-2">
                     {[
                       "Your Unlock password",
-                      "Your unecyrpted API/.env file secrets",
+                      "Your unencrypted API/.env file secrets",
                       "Your encryption keys",
                       "Your decryption process"
                     ].map((item, idx) => (

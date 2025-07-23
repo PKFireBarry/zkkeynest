@@ -21,7 +21,7 @@ export default function Footer() {
           <div className="font-semibold mb-2"></div>
           <Link href="#how-it-works" className="text-muted-foreground hover:text-white transition-colors">How it works</Link>
           <Link href="#pricing" className="text-muted-foreground hover:text-white transition-colors">Pricing</Link>
-          <Link href="#pricing" className="text-muted-foreground hover:text-white transition-colors">Privicy Policy</Link>
+          <Link href="#pricing" className="text-muted-foreground hover:text-white transition-colors">Privacy Policy</Link>
           <Link href="#pricing" className="text-muted-foreground hover:text-white transition-colors">Terms of Service</Link>
         </div>
 

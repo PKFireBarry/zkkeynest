@@ -136,7 +136,7 @@ export default function TrustCredibility() {
               </div>
               <div className="mt-6 p-4 bg-white/50 dark:bg-black/20 rounded-lg">
                 <p className="text-sm font-medium text-center">
-                  <span className="text-primary">Industry-standard, battle-tested encryption</span> — 
+                  <span className="text-primary">Industry-standard, battle-tested encryption</span> - 
                   not experimental or homebrew crypto
                 </p>
               </div>

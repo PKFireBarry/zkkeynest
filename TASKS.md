@@ -260,3 +260,5 @@ interface Share {
 - Week 1-4: Collaboration features
 - Week 5-8: Enterprise features
 - Week 9-12: Testing and security audit 
+[x] Polish homepage grammar, spelling, and text issues (see summary for details) 
+[x] Remove all em dashes (—) from homepage components for consistency and accessibility 

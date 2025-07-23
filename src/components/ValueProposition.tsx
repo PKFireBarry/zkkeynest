@@ -21,7 +21,7 @@ interface CompetitorComparison {
 const competitorComparisons: CompetitorComparison[] = [
   {
     feature: "API Key Focus",
-    zkKeynest: "Built specifically for For Developers",
+    zkKeynest: "Built specifically for developers",
     competitors: "General password managers",
     advantage: "Specialized features like rotation reminders and copy-paste safety"
   },
@@ -102,7 +102,7 @@ export default function ValueProposition() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            We're not trying to replace your password manager. We're solving the specific pain points developers face with secure API key management that doesnt require trust.
+            We're not trying to replace your password manager. We're solving the specific pain points developers face with secure API key management that doesn't require trust.
           </motion.p>
         </div>
 

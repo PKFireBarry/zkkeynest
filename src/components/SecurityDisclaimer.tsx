@@ -36,7 +36,7 @@ export default function SecurityDisclaimer({ className }: SecurityDisclaimerProp
           </AlertTitle>
           <AlertDescription className="text-amber-700 dark:text-amber-300 mt-2">
             <p className="mb-3">
-              <strong>If you forget your unlock password, your data cannot be recovered.</strong> This is not a bug—it's an intentional design choice that ensures your complete privacy and security.
+              <strong>If you forget your unlock password, your data cannot be recovered.</strong> This is not a bug-it's an intentional design choice that ensures your complete privacy and security.
             </p>
             <p className="mb-3">
               We use zero-knowledge encryption, which means we never see, store, or have access to your unlock password or decrypted data. Only you can unlock your vault.

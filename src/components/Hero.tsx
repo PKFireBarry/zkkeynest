@@ -31,7 +31,7 @@ const Hero = () => {
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl">
-            Find any API key in 2 minutes or less with secure zero-knowledge encryption. Share API keys secrets with others in seconds with secure one-time use links.
+            Find any API key in under 2 minutes with secure zero-knowledge encryption. Share API key secrets with others in seconds with secure one-time use links.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mt-4">

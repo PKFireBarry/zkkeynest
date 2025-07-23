@@ -23,7 +23,7 @@ export default function PerfectFor() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            We're building a secure, no-friction API key vault for developers and small teams. Starting with solo devs scraping together free-tier access to build products, we scale into team workflows where API keys are a core but messy part of the stack. There's no cheap clean solution for lightweight, encrypted key sharing today—and we're solving that.
+            We're building a secure, no-friction API key vault for developers and small teams. Starting with solo devs scraping together free-tier access to build products, we scale into team workflows where API keys are a core but messy part of the stack. There's no cheap clean solution for lightweight, encrypted key sharing today-and we're solving that.
           </motion.p>
         </div>
 
@@ -109,7 +109,7 @@ export default function PerfectFor() {
         {/* Perfect For Section */}
         <div className="text-center mb-8">
           <h3 className="text-2xl sm:text-3xl font-bold mb-2">Perfect For</h3>
-          <p className="text-lg text-muted-foreground">Different developers, same problem</p>
+          <p className="text-lg text-muted-foreground">Different developers, same problems</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -130,8 +130,8 @@ export default function PerfectFor() {
                 <h4 className="text-xl font-bold mb-2">Solo Developers</h4>
                 <p className="text-sm text-muted-foreground mb-4">"The account juggler's dream"</p>
                 <ul className="space-y-2 text-sm mb-6 flex-grow">
-                  <li>- Youre a freelancer that needs to have clients share secrets</li>
-                  <li>- You use more then one computer for development</li>
+                  <li>- You're a freelancer that needs to have clients share secrets</li>
+                  <li>- You use more than one computer for development</li>
                   <li>- You're tired of logging in/out constantly of accounts to swap free tier keys</li>
                 </ul>
                 <div className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-sm rounded-lg px-3 py-2 font-medium mt-auto">
@@ -162,7 +162,7 @@ export default function PerfectFor() {
                 <p className="text-sm text-muted-foreground mb-4">"No more risky Slack messages"</p>
                 <ul className="space-y-2 text-sm mb-6 flex-grow">
                   <li>- You need to share API keys with teammates securely</li>
-                  <li>- Managing client API keys across multiple projects simultaneousl/</li>
+                  <li>- Managing client API keys across multiple projects simultaneously</li>
                   <li>- Secure handoff of credentials when team members rotate between projects</li>
                 </ul>
                 <div className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 text-sm rounded-lg px-3 py-2 font-medium mt-auto">
