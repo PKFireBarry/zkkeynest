@@ -151,7 +151,7 @@ export default function FeedbackAdminPage() {
   return (
     <div className="min-h-screen w-screen overflow-x-hidden bg-background text-foreground font-sans flex flex-col">
       <Navbar />
-      <main className="w-full px-4 sm:px-6 py-8 sm:py-12 flex flex-col items-center bg-background">
+      <main className="w-full px-4 sm:px-6 pt-20 sm:pt-24 pb-8 sm:pb-12 flex flex-col items-center bg-background">
         <div className="w-full max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
