@@ -7,6 +7,7 @@ import PricingSection from "@/components/PricingSection";
 import TrustCredibility from "@/components/TrustCredibility";
 import ComplianceSection from "@/components/ComplianceSection";
 import ValueProposition from "@/components/ValueProposition";
+import FAQ from "@/components/FAQ";
 
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
       <PricingSection />
       {/*<LongevityAssurance />*/}
       <ComplianceSection />
+      <FAQ />
       <Footer />
     </div>
   );

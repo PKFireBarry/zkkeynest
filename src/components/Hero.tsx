@@ -24,9 +24,9 @@ const Hero = () => {
           </Badge>
 
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold leading-tight">
-            Your API keys,<br />
+            Secure API Key Manager for Developers<br />
             <span className="bg-gradient-to-r from-[#6366f1] to-[#a21caf] bg-clip-text text-transparent">
-              organized & secure
+              Zero-Knowledge Encryption
             </span>
           </h1>
 
