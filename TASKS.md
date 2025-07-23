@@ -59,6 +59,7 @@
 - [x] Add a 'Coming Soon' badge to the Team Plan card and update the CTA button to be disabled with the label 'Coming Soon'. Also, add a subtle note below the button indicating that the Team Plan is not yet available. Use Tailwind for styling and ensure accessibility (aria-disabled, etc.).
 - [x] Create a responsive footer component matching the provided image, but only include links and sections that exist in the app: Home, How it works (anchor), Pricing (anchor). Omit all non-existent pages. Include logo, app name, tagline, and social icons (with placeholder links). Use Tailwind CSS and ensure dark mode support. Copyright at the bottom.
 - [x] Hide the how it works link in the dashboard navbar
+- [x] Install framer-motion dependency to resolve build errors for animated components
 
 ### Data Management
 - [x] Implement client-side encryption before storage
@@ -165,6 +166,7 @@
 - Firebase SDK
 - Stripe SDK
 - Web Crypto API
+- framer-motion *(installed to resolve build errors)*
 
 ### Environment Variables
 ```
