@@ -153,3 +153,13 @@ export interface MobileMenuProps {
   onClose: () => void;
   navigationLinks: NavigationLink[];
 } 
+
+// Feedback interface
+export interface Feedback {
+  id: string;
+  type: 'bug' | 'suggestion' | 'other';
+  message: string;
+  email?: string;
+  userId?: string; // Optional for anonymous feedback
+  createdAt: Timestamp;
+} 

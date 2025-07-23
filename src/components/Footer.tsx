@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FeedbackButton } from "./FeedbackButton";
 
 export default function Footer() {
   return (
@@ -12,7 +13,7 @@ export default function Footer() {
           </div>
           <div className="text-sm text-muted-foreground mb-2">Secure API key management with zero-knowledge encryption.</div>
           <div className="flex items-center gap-3 mt-2">
- 
+            <FeedbackButton />
           </div>
         </div>
         {/* Center: Product links */}

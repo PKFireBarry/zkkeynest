@@ -60,6 +60,7 @@
 - [x] Create a responsive footer component matching the provided image, but only include links and sections that exist in the app: Home, How it works (anchor), Pricing (anchor). Omit all non-existent pages. Include logo, app name, tagline, and social icons (with placeholder links). Use Tailwind CSS and ensure dark mode support. Copyright at the bottom.
 - [x] Hide the how it works link in the dashboard navbar
 - [x] Install framer-motion dependency to resolve build errors for animated components
+- [x] Add user feedback funnel (feedback button, dialog, API, and storage)
 
 ### Data Management
 - [x] Implement client-side encryption before storage

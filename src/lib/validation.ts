@@ -275,4 +275,25 @@ export function validateApiKey(apiKey: ApiKey): void {
   };
 
   validateCreateApiKeyForm(formData);
+}
+
+export interface FeedbackForm {
+  type: 'bug' | 'suggestion' | 'other';
+  message: string;
+  email?: string;
+}
+
+export function validateFeedbackForm(data: FeedbackForm): void {
+  if (!data.type || !['bug', 'suggestion', 'other'].includes(data.type)) {
+    throw new ValidationException(ValidationError.REQUIRED_FIELD, 'Feedback type is required', 'type');
+  }
+  if (!data.message || data.message.trim().length < 10) {
+    throw new ValidationException(ValidationError.REQUIRED_FIELD, 'Message must be at least 10 characters', 'message');
+  }
+  if (data.email && !validateEmail(data.email)) {
+    throw new ValidationException(ValidationError.INVALID_EMAIL, 'Invalid email address', 'email');
+  }
+  if (data.message.length > 1000) {
+    throw new ValidationException(ValidationError.NOTES_TOO_LONG, 'Message is too long', 'message');
+  }
 } 

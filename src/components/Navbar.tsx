@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FeedbackButton } from "./FeedbackButton";
 
 interface NavbarProps {
   showHomeLinks?: boolean;
@@ -150,6 +151,7 @@ export default function Navbar({ showHomeLinks = true, showDashboardLinks = fals
         <SignedIn>
           <UserButton />
         </SignedIn>
+        <FeedbackButton className="ml-2" />
         <ThemeToggle />
       </nav>
       <div className="md:hidden flex items-center gap-1 shrink-0 min-w-0">

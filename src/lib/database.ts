@@ -14,7 +14,7 @@ import {
   Timestamp 
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { ApiKey, User, Share } from '@/types';
+import { ApiKey, User, Share, Feedback } from '@/types';
 import { Folder } from '@/types';
 
 // User operations
@@ -382,6 +382,58 @@ export async function getUserShares(userId: string): Promise<Share[]> {
     return shares;
   } catch (error) {
     console.error('Error getting user shares:', error);
+    throw error;
+  }
+} 
+
+// Feedback operations
+export async function createFeedback(feedbackData: Omit<Feedback, 'id' | 'createdAt'>): Promise<string> {
+  const feedbackRef = await addDoc(collection(db, 'feedback'), {
+    ...feedbackData,
+    createdAt: serverTimestamp(),
+  });
+  return feedbackRef.id;
+}
+
+export async function getFeedbacks(): Promise<Feedback[]> {
+  try {
+    const feedbackRef = collection(db, 'feedback');
+    const q = query(feedbackRef, orderBy('createdAt', 'desc'));
+    const feedbackSnap = await getDocs(q);
+    
+    const feedbacks = feedbackSnap.docs.map(doc => {
+      const data = doc.data();
+      
+      // Ensure createdAt is properly formatted
+      let createdAt = data.createdAt;
+      if (createdAt && typeof createdAt.toDate === 'function') {
+        // Convert Firestore Timestamp to the expected format
+        createdAt = {
+          seconds: createdAt.seconds,
+          nanoseconds: createdAt.nanoseconds
+        };
+      }
+      
+      return { 
+        id: doc.id, 
+        ...data,
+        createdAt 
+      };
+    }) as Feedback[];
+    
+    return feedbacks;
+  } catch (error) {
+    console.error('Error in getFeedbacks:', error);
+    throw error;
+  }
+}
+
+export async function deleteFeedback(id: string): Promise<void> {
+  try {
+    const feedbackRef = doc(db, 'feedback', id);
+    await deleteDoc(feedbackRef);
+  } catch (error) {
+    console.error('Error deleting feedback:', error);
     throw error;
   }
 } 
