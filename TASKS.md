@@ -61,6 +61,7 @@
 - [x] Hide the how it works link in the dashboard navbar
 - [x] Install framer-motion dependency to resolve build errors for animated components
 - [x] Add user feedback funnel (feedback button, dialog, API, and storage)
+- [x] Add Product Hunt embed and Loom demo video link to the top of the homepage Hero section, centered and responsive
 
 ### Data Management
 - [x] Implement client-side encryption before storage
