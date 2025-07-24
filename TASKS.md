@@ -39,7 +39,7 @@
 
 ### User Interface
 - [x] Design and build dashboard layout *(Landing/Hero page implemented as per UI mockup)*
-- [ ] Create navigation and sidebar
+- [x] Create navigation and sidebar (fixed anchor scroll offset bug with scroll-mt-20 on all sections)
 - [x] Build API key card components
 - [x] Implement search and basic filtering
 - [x] Add loading states and error handling

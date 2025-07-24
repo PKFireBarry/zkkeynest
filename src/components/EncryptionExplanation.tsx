@@ -90,7 +90,7 @@ export default function EncryptionExplanation() {
   }
 
   return (
-    <section className="w-full px-4 sm:px-6 py-8 sm:py-12 flex flex-col items-center bg-background" id="how-it-works">
+    <section className="w-full px-4 sm:px-6 py-8 sm:py-12 flex flex-col items-center bg-background scroll-mt-20" id="how-it-works">
       <div className="w-full max-w-6xl">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">

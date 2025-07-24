@@ -138,7 +138,7 @@ export default function ComplianceSection({ className = '' }: ComplianceSectionP
   };
 
   return (
-    <section id="compliance" className={`py-16 px-4 sm:px-6 lg:px-8 ${className}`}>
+    <section id="compliance" className={`py-16 px-4 sm:px-6 lg:px-8 scroll-mt-20 ${className}`}>
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

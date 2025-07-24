@@ -127,7 +127,7 @@ const planFeatures = {
 
 export default function PricingSection() {
   return (
-    <section id="pricing" className="w-full flex flex-col items-center justify-center px-4 sm:px-6 py-8 md:py-0 bg-background text-foreground md:min-h-screen min-h-[80vh]">
+    <section id="pricing" className="w-full flex flex-col items-center justify-center px-4 sm:px-6 py-8 md:py-0 bg-background text-foreground md:min-h-screen min-h-[80vh] scroll-mt-20">
       <div className="w-full max-w-6xl mx-auto flex flex-col items-center justify-center h-full">
         {/* Header */}
         <div className="text-center mb-8 md:mb-12">

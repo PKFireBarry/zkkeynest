@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function PerfectFor() {
   return (
-    <section id="perfect-for" className="w-full px-4 sm:px-6 py-8 sm:py-12 flex flex-col items-center bg-background">
+    <section id="perfect-for" className="w-full px-4 sm:px-6 py-8 sm:py-12 flex flex-col items-center bg-background scroll-mt-20">
       <div className="w-full max-w-6xl">
         {/* Why zKkeynest Section */}
         <div className="text-center mb-8 sm:mb-12">
