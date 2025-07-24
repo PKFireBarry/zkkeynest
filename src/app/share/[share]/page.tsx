@@ -140,7 +140,7 @@ export default function SharePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-6">
             <div className="text-center">
@@ -156,19 +156,7 @@ export default function SharePage() {
               </h2>
               <p className="text-muted-foreground mb-4">{error}</p>
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Please close this tab manually for security.
-                </p>
-                <Button onClick={() => {
-                  try {
-                    window.close();
-                  } catch (e) {
-                    // If window.close() fails, show a message
-                    alert('Please close this tab manually for security.');
-                  }
-                }}>
-                  Close Tab
-                </Button>
+                <p className="text-sm text-muted-foreground text-center mt-4">Please close this tab or window manually for security.</p>
               </div>
             </div>
           </CardContent>
@@ -179,7 +167,7 @@ export default function SharePage() {
 
   if (!share || !decryptedApiKey) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-6">
             <div className="text-center">
@@ -189,19 +177,7 @@ export default function SharePage() {
                 This share link is invalid or has been deleted.
               </p>
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Please close this tab manually for security.
-                </p>
-                <Button onClick={() => {
-                  try {
-                    window.close();
-                  } catch (e) {
-                    // If window.close() fails, show a message
-                    alert('Please close this tab manually for security.');
-                  }
-                }}>
-                  Close Tab
-                </Button>
+                <p className="text-sm text-muted-foreground text-center mt-4">Please close this tab or window manually for security.</p>
               </div>
             </div>
           </CardContent>
@@ -321,19 +297,7 @@ export default function SharePage() {
           </Alert>
 
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground text-center">
-              Please close this tab manually for security.
-            </p>
-            <Button onClick={() => {
-              try {
-                window.close();
-              } catch (e) {
-                // If window.close() fails, show a message
-                alert('Please close this tab manually for security.');
-              }
-            }} className="w-full">
-              Close Tab
-            </Button>
+            <p className="text-sm text-muted-foreground text-center mt-4">Please close this tab or window manually for security.</p>
           </div>
         </CardContent>
       </Card>

@@ -49,7 +49,7 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [expirationHours, setExpirationHours] = useState(24);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareLinks, setShareLinks] = useState<Array<{ url: string; expiresAt: Date }>>([]);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -122,11 +122,11 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
       const url = `${baseUrl}/share/${shareId}`;
       console.log('Generated share URL:', url);
       console.log('Setting share URL in state:', url);
-      setShareUrl(url);
+      setShareLinks(prev => [...prev, { url, expiresAt: new Date(expiresAt) }]);
       
       // Test the URL immediately
       setTimeout(() => {
-        console.log('Current shareUrl state:', shareUrl);
+        console.log('Current shareUrl state:', shareLinks);
         console.log('Testing share URL:', url);
         // You can test the URL by opening it in a new tab
         // window.open(url, '_blank');
@@ -144,9 +144,9 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
   };
 
   const handleCopyUrl = async () => {
-    if (shareUrl) {
+    if (shareLinks.length > 0) {
       try {
-        await navigator.clipboard.writeText(shareUrl);
+        await navigator.clipboard.writeText(shareLinks[0].url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
@@ -157,7 +157,7 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
 
   const handleClose = () => {
     setIsOpen(false);
-    setShareUrl(null);
+    setShareLinks([]);
     setError('');
     setCopied(false);
     // Call the callback when user closes the modal
@@ -293,10 +293,9 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
 
           {/* Footer for action buttons */}
           <div className="pt-4 border-t mt-6">
-          {!shareUrl ? (
             <>
-              {/* Expiration Settings */}
-                <div className="space-y-2 mb-2">
+              {/* Expiration Settings and Create Button always visible */}
+              <div className="space-y-2 mb-2">
                 <Label htmlFor="expiration">Link Expiration</Label>
                 <Select value={expirationHours.toString()} onValueChange={(value) => setExpirationHours(parseInt(value))}>
                   <SelectTrigger id="expiration">
@@ -314,8 +313,6 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
                   Link will expire in {formatExpiration(expirationHours)}
                 </p>
               </div>
-
-              {/* Security Warning */}
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
@@ -323,47 +320,50 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
                   Share it securely and only with trusted recipients.
                 </AlertDescription>
               </Alert>
-
               <Button 
                 onClick={handleCreateShare} 
                 disabled={isCreating}
-                  className="w-full mt-4"
+                className="w-full mt-4"
               >
                 {isCreating ? 'Creating...' : 'Create Share Link'}
               </Button>
-            </>
-          ) : (
-            <>
-              {/* Success Message */}
-              <Alert>
-                <CheckCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Share link created successfully! The link can only be used once.
-                </AlertDescription>
-              </Alert>
-
-              {/* Share URL */}
-              <div className="space-y-2">
-                <Label>Share Link</Label>
-                <div className="relative">
-                  <Input
-                    value={shareUrl}
-                    readOnly
-                    className="font-mono text-sm pr-12"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3"
-                    onClick={handleCopyUrl}
-                  >
-                      <Copy className="h-4 w-4" />
-                  </Button>
+              {/* List of created share links */}
+              {shareLinks.length > 0 && (
+                <div className="mt-6 space-y-4">
+                  <Alert>
+                    <CheckCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      {shareLinks.length === 1 ? 'Share link created successfully!' : 'Share links created successfully!'} The links can only be used once.
+                    </AlertDescription>
+                  </Alert>
+                  <div className="space-y-2">
+                    <Label>Share Links</Label>
+                    {shareLinks.map((link, idx) => (
+                      <div key={idx} className="relative flex items-center gap-2 mb-2">
+                        <Input
+                          value={link.url}
+                          readOnly
+                          className="font-mono text-sm pr-12"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full px-3"
+                          onClick={() => navigator.clipboard.writeText(link.url)}
+                          title="Copy"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <span className="text-xs text-muted-foreground ml-2">
+                          Expires: {link.expiresAt.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-              </div>
+                </div>
+              )}
             </>
-          )}
           </div>
         </div>
       </DialogContent>

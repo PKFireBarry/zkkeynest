@@ -149,12 +149,13 @@
 4. Decrypt only when master password is provided
 
 ### One-Time Sharing
-1. ✅ Generate unique symmetric key for share
-2. ✅ Encrypt API key with share key
-3. ✅ Create unique URL with encrypted data
-4. ✅ Store share metadata with expiration
-5. ✅ Decrypt on recipient's browser
-6. ✅ Invalidate share after use
+- [x] Generate unique symmetric key for share
+- [x] Encrypt API key with share key
+- [x] Create unique URL with encrypted data
+- [x] Store share metadata with expiration
+- [x] Decrypt on recipient's browser
+- [x] Invalidate share after use
+- [x] Allow multiple share links to be created and viewed in a single modal session (no reload required)
 
 ## Technical Requirements
 
