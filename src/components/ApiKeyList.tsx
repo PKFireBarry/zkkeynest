@@ -245,7 +245,7 @@ export default function ApiKeyList({ onRefresh }: ApiKeyListProps) {
 
       {/* Bulk Actions Header */}
       {filteredApiKeys.length > 0 && (
-        <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 bg-muted/50 rounded-lg border">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -258,10 +258,10 @@ export default function ApiKeyList({ onRefresh }: ApiKeyListProps) {
               ) : (
                 <Square className="h-4 w-4" />
               )}
-              Select All ({filteredApiKeys.length})
+              <span className="text-xs sm:text-sm">Select All ({filteredApiKeys.length})</span>
             </Button>
             {selectedKeys.size > 0 && (
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {selectedKeys.size} selected
               </span>
             )}
@@ -271,10 +271,10 @@ export default function ApiKeyList({ onRefresh }: ApiKeyListProps) {
               variant="destructive"
               size="sm"
               onClick={handleBulkDelete}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Trash2 className="h-4 w-4" />
-              Delete Selected ({selectedKeys.size})
+              <span className="text-xs sm:text-sm">Delete Selected ({selectedKeys.size})</span>
             </Button>
           )}
         </div>
