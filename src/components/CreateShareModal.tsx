@@ -199,8 +199,8 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
         )}
       </DialogTrigger>
       {/* Use a wider modal for all cases */}
-      <DialogContent className="w-full max-w-lg sm:max-w-xl overflow-x-visible p-0">
-        <DialogHeader className="px-8 pt-8 pb-2">
+      <DialogContent className="w-full max-w-lg sm:max-w-xl flex flex-col max-h-[90vh] h-full p-0">
+        <DialogHeader className="px-4 sm:px-8 pt-8 pb-2 shrink-0 sticky top-0 z-10 bg-background">
           <DialogTitle className="flex items-center gap-2">
             <Share2 className="h-5 w-5" />
             Share API Key
@@ -209,8 +209,7 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
             Create a secure, one-time use link to share this API key.
           </DialogDescription>
         </DialogHeader>
-
-        <div className="space-y-6 px-4 sm:px-8 pb-8 max-h-[80vh] overflow-y-auto">
+        <div className="flex-1 overflow-y-auto space-y-6 px-4 sm:px-8 pb-8">
           {/* API Key Info */}
           <div className="rounded-lg border bg-card p-4 mb-2">
             <div className="flex flex-col gap-1 mb-2">
