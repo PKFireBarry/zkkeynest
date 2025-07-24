@@ -329,39 +329,45 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
               </Button>
               {/* List of created share links */}
               {shareLinks.length > 0 && (
-                <div className="mt-6 space-y-4">
-                  <Alert>
-                    <CheckCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {shareLinks.length === 1 ? 'Share link created successfully!' : 'Share links created successfully!'} The links can only be used once.
-                    </AlertDescription>
-                  </Alert>
-                  <div className="space-y-2">
-                    <Label>Share Links</Label>
+                <Card className="mt-8 border bg-muted/40">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Share2 className="h-4 w-4" /> Share Links
+                    </CardTitle>
+                    <CardDescription>All links below can only be used once. Copy and share securely.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2 pt-0">
+                    <Alert className="mb-4">
+                      <CheckCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        {shareLinks.length === 1 ? 'Share link created successfully!' : 'Share links created successfully!'}
+                      </AlertDescription>
+                    </Alert>
                     {shareLinks.map((link, idx) => (
-                      <div key={idx} className="relative flex items-center gap-2 mb-2">
+                      <div key={idx} className="flex items-center gap-3 rounded-lg border bg-background px-3 py-2">
                         <Input
                           value={link.url}
                           readOnly
-                          className="font-mono text-sm pr-12"
+                          className="font-mono text-xs sm:text-sm pr-12 bg-background border-none shadow-none focus-visible:ring-0 focus-visible:border-primary"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="absolute right-0 top-0 h-full px-3"
+                          className="ml-1"
                           onClick={() => navigator.clipboard.writeText(link.url)}
                           title="Copy"
                         >
                           <Copy className="h-4 w-4" />
                         </Button>
-                        <span className="text-xs text-muted-foreground ml-2">
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground ml-auto">
+                          <Clock className="h-3 w-3" />
                           Expires: {link.expiresAt.toLocaleString()}
                         </span>
                       </div>
                     ))}
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               )}
             </>
           </div>
