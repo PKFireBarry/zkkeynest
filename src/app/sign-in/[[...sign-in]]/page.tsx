@@ -20,8 +20,8 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen w-full bg-background flex items-center justify-center px-2 sm:px-4 py-8">
+      <div className="w-full max-w-md mx-auto">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <img src="/logo.png" alt="zKkeynest logo" className="w-8 h-8 rounded-md object-contain" />

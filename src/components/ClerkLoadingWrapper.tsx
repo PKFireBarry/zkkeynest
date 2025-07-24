@@ -29,7 +29,7 @@ export default function ClerkLoadingWrapper({ mode, appearance }: ClerkLoadingWr
 
   if (isLoading) {
     return (
-      <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+      <div className="bg-card border border-border rounded-lg w-full max-w-full p-4 sm:p-6 shadow-sm overflow-x-auto">
         <div className="flex flex-col items-center justify-center py-8">
           <div className="relative">
             <div className="w-12 h-12 border-4 border-[#6366f1] border-t-transparent rounded-full animate-spin" />
@@ -49,7 +49,7 @@ export default function ClerkLoadingWrapper({ mode, appearance }: ClerkLoadingWr
   }
 
   return (
-    <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+    <div className="bg-card border border-border rounded-lg w-full max-w-full p-4 sm:p-6 shadow-sm overflow-x-auto">
       {mode === "sign-in" ? (
         <SignIn appearance={appearance} />
       ) : (
