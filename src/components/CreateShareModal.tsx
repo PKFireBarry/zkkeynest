@@ -210,7 +210,7 @@ export default function CreateShareModal({ apiKey, onShareCreated, customTrigger
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 px-8 pb-8">
+        <div className="space-y-6 px-4 sm:px-8 pb-8 max-h-[80vh] overflow-y-auto">
           {/* API Key Info */}
           <div className="rounded-lg border bg-card p-4 mb-2">
             <div className="flex flex-col gap-1 mb-2">
