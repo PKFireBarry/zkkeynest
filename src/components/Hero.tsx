@@ -12,7 +12,7 @@ const Hero = () => {
   return (
     <section id="hero" className="w-full min-h-screen flex flex-col items-center justify-center bg-background px-4 sm:px-6 py-8 sm:py-12 pt-20 sm:pt-24">
       <div className="w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
-        {/* Product Hunt Embed & Loom Video Link */}
+        {/* Product Hunt Embed */}
         <div className="flex flex-col items-center w-full mb-6">
           {/* Product Hunt Badge */}
           <a
@@ -29,21 +29,6 @@ const Hero = () => {
               width={250}
               height={54}
             />
-          </a>
-          {/* Loom Demo Video Link */}
-          <a
-            href="https://www.loom.com/share/f09b795dde2e4676970a7923226d83cd?sid=f94257b5-782e-40dd-8366-0cda9ee2390b"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block"
-            aria-label="Watch demo video on Loom"
-          >
-            <button
-              className="mt-2 px-6 py-2 rounded-lg bg-gradient-to-r from-[#6366f1] to-[#a21caf] text-white font-semibold shadow-lg hover:scale-105 transition-transform text-base sm:text-lg"
-              type="button"
-            >
-              🎥 Watch Demo Video
-            </button>
           </a>
         </div>
         {/* Hero Content */}
@@ -73,7 +58,14 @@ const Hero = () => {
               <Link href="/sign-in">Get Started</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="px-8 py-3 text-base font-semibold">
-              <Link href="#how-it-works">View Demo</Link>
+              <a
+                href="https://www.loom.com/share/f09b795dde2e4676970a7923226d83cd?sid=f94257b5-782e-40dd-8366-0cda9ee2390b"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Watch demo video on Loom"
+              >
+                View Demo
+              </a>
             </Button>
           </div>
         </motion.div>

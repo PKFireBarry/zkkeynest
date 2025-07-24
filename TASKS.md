@@ -62,6 +62,7 @@
 - [x] Install framer-motion dependency to resolve build errors for animated components
 - [x] Add user feedback funnel (feedback button, dialog, API, and storage)
 - [x] Add Product Hunt embed and Loom demo video link to the top of the homepage Hero section, centered and responsive
+- [x] Move Loom demo video link into the 'View Demo' button in the Hero section and remove the extra top button
 
 ### Data Management
 - [x] Implement client-side encryption before storage
