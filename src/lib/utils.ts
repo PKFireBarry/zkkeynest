@@ -15,7 +15,4 @@ export function isAdmin(email?: string | null): boolean {
   return ADMIN_EMAILS.includes(email);
 }
 
-// Simple user ID based admin check for your personal use
-export function isAdminUserId(userId?: string | null): boolean {
-  return userId === 'user_2zvYkVykg0hZDCqGFOMHNnWkyWM';
-}
+

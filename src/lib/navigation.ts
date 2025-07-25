@@ -145,30 +145,3 @@ export const scrollToSection = async (sectionId: string, duration: number = 800)
   });
 };
 
-/**
- * Handle navigation link clicks with smooth scrolling
- * Prevents default anchor behavior and uses custom smooth scrolling
- * @param event - The click event
- * @param href - The href attribute of the clicked link
- * @returns Promise that resolves when scrolling is complete
- */
-export const handleSmoothNavigation = async (
-  event: React.MouseEvent<HTMLAnchorElement>,
-  href: string
-): Promise<void> => {
-  // Only handle hash links (internal navigation)
-  if (!href.startsWith('#')) {
-    return;
-  }
-
-  event.preventDefault();
-  
-  try {
-    const sectionId = href.slice(1); // Remove the #
-    await scrollToSection(sectionId);
-  } catch (error) {
-    console.error('Navigation error:', error);
-    // Fallback to default browser behavior if our smooth scrolling fails
-    window.location.hash = href;
-  }
-};

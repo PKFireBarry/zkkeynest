@@ -19,9 +19,7 @@ export default function Home() {
       <EncryptionExplanation />
       <ValueProposition />
       <TrustCredibility />
-      {/*<SecurityDisclaimer />*/}
       <PricingSection />
-      {/*<LongevityAssurance />*/}
       <ComplianceSection />
       <FAQ />
       <Footer />

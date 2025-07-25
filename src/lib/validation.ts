@@ -1,4 +1,4 @@
-import { ApiKey, CreateApiKeyForm, MasterPasswordForm, UnlockVaultForm } from '@/types';
+import { CreateApiKeyForm } from '@/types';
 
 // Validation error types
 export enum ValidationError {
@@ -79,32 +79,28 @@ const API_KEY_PATTERNS = {
   other: /^.+$/ // Accept any non-empty string for custom services
 };
 
-// Validate email format
-export function validateEmail(email: string): boolean {
+// Internal validation functions (not exported as they're only used internally)
+function validateEmail(email: string): boolean {
   if (!email) return true; // Email is optional
   return EMAIL_REGEX.test(email);
 }
 
-// Validate API key format based on service
-export function validateApiKeyFormat(apiKey: string, service: string): boolean {
+function validateApiKeyFormat(apiKey: string, service: string): boolean {
   const pattern = API_KEY_PATTERNS[service as keyof typeof API_KEY_PATTERNS] || API_KEY_PATTERNS.other;
   return pattern.test(apiKey);
 }
 
-// Validate field length
-export function validateFieldLength(value: string, field: keyof typeof VALIDATION_RULES): boolean {
+function validateFieldLength(value: string, field: keyof typeof VALIDATION_RULES): boolean {
   const rule = VALIDATION_RULES[field];
   return !rule.maxLength || value.length <= rule.maxLength;
 }
 
-// Validate required fields
-export function validateRequired(value: string, field: keyof typeof VALIDATION_RULES): boolean {
+function validateRequired(value: string, field: keyof typeof VALIDATION_RULES): boolean {
   const rule = VALIDATION_RULES[field];
   return !rule.required || Boolean(value && value.trim().length > 0);
 }
 
-// Validate password strength
-export function validatePassword(password: string): boolean {
+function validatePassword(password: string): boolean {
   return password.length >= (VALIDATION_RULES.password.minLength || 8);
 }
 
@@ -201,57 +197,7 @@ export function validateCreateApiKeyForm(data: CreateApiKeyForm): void {
   }
 }
 
-// Validate MasterPasswordForm
-export function validateMasterPasswordForm(data: MasterPasswordForm): void {
-  const errors: ValidationException[] = [];
 
-  if (!validateRequired(data.password, 'password')) {
-    errors.push(new ValidationException(
-      ValidationError.REQUIRED_FIELD,
-      'Password is required',
-      'password'
-    ));
-  }
-
-  if (!validateRequired(data.confirmPassword, 'password')) {
-    errors.push(new ValidationException(
-      ValidationError.REQUIRED_FIELD,
-      'Please confirm your password',
-      'confirmPassword'
-    ));
-  }
-
-  if (!validatePassword(data.password)) {
-    errors.push(new ValidationException(
-      ValidationError.PASSWORD_TOO_SHORT,
-      `Password must be at least ${VALIDATION_RULES.password.minLength} characters`,
-      'password'
-    ));
-  }
-
-  if (data.password !== data.confirmPassword) {
-    errors.push(new ValidationException(
-      ValidationError.PASSWORD_MISMATCH,
-      'Passwords do not match',
-      'confirmPassword'
-    ));
-  }
-
-  if (errors.length > 0) {
-    throw errors[0];
-  }
-}
-
-// Validate UnlockVaultForm
-export function validateUnlockVaultForm(data: UnlockVaultForm): void {
-  if (!validateRequired(data.password, 'password')) {
-    throw new ValidationException(
-      ValidationError.REQUIRED_FIELD,
-      'Password is required',
-      'password'
-    );
-  }
-}
 
 // Sanitize input data
 export function sanitizeApiKeyData(data: CreateApiKeyForm): CreateApiKeyForm {
@@ -264,18 +210,7 @@ export function sanitizeApiKeyData(data: CreateApiKeyForm): CreateApiKeyForm {
   };
 }
 
-// Validate existing ApiKey object
-export function validateApiKey(apiKey: ApiKey): void {
-  const formData: CreateApiKeyForm = {
-    label: apiKey.label,
-    service: apiKey.service,
-    email: apiKey.email,
-    apiKey: 'placeholder', // We don't have the actual key here
-    notes: apiKey.notes
-  };
 
-  validateCreateApiKeyForm(formData);
-}
 
 export interface FeedbackForm {
   type: 'bug' | 'suggestion' | 'other';

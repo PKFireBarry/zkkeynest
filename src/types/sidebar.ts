@@ -12,13 +12,6 @@ export interface NavItem {
   badge?: string; // For notifications or status
 }
 
-// Sidebar state interface
-export interface SidebarState {
-  activeView: SidebarView;
-  collapsed: boolean;
-  width: number;
-}
-
 // Sidebar preferences for localStorage
 export interface SidebarPreferences {
   activeView: SidebarView;

@@ -88,15 +88,6 @@ export class SecurityException extends Error {
   }
 }
 
-// Subscription plans
-export interface SubscriptionPlan {
-  id: string;
-  name: string;
-  price: number;
-  features: string[];
-  maxKeys: number;
-}
-
 // Form schemas
 export interface CreateApiKeyForm {
   label: string;
@@ -114,23 +105,6 @@ export interface MasterPasswordForm {
 export interface UnlockVaultForm {
   password: string;
 }
-
-// Service options for API keys
-export const SERVICE_OPTIONS = [
-  { value: 'openai', label: 'OpenAI' },
-  { value: 'github', label: 'GitHub' },
-  { value: 'stripe', label: 'Stripe' },
-  { value: 'aws', label: 'AWS' },
-  { value: 'google', label: 'Google Cloud' },
-  { value: 'azure', label: 'Azure' },
-  { value: 'heroku', label: 'Heroku' },
-  { value: 'digitalocean', label: 'DigitalOcean' },
-  { value: 'vercel', label: 'Vercel' },
-  { value: 'netlify', label: 'Netlify' },
-  { value: 'other', label: 'Other' },
-] as const;
-
-export type ServiceType = typeof SERVICE_OPTIONS[number]['value']; 
 
 // Folder interface for organization features
 export interface Folder {

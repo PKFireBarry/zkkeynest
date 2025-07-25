@@ -5,7 +5,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
   experimental: {
     // Other experimental features can be added here
   },
@@ -22,7 +21,6 @@ const nextConfig: NextConfig = {
     ],
   },
   
-  // Disable ESLint during builds for now
   eslint: {
     ignoreDuringBuilds: true,
   },

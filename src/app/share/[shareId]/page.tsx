@@ -2,17 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { getShare, markShareAsUsed } from '@/lib/database';
+import { getShare, markShareAsUsed, timestampToDate } from '@/lib/database';
 import { decryptSharedApiKey } from '@/lib/encryption';
 import { Share } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Copy, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
-import { timestampToDate } from '@/lib/database';
 import { parseEnv } from '@/lib/parseEnv';
 
 // Function to obfuscate API key values, showing only the first few characters
@@ -101,7 +99,7 @@ export default function SharePage() {
       try {
         await navigator.clipboard.writeText(decryptedApiKey);
         // You could add a toast notification here
-      } catch (err) {
+      } catch {
         setError('Failed to copy to clipboard');
       }
     }
@@ -112,7 +110,7 @@ export default function SharePage() {
       await navigator.clipboard.writeText(text);
       setCopiedIdx(idx);
       setTimeout(() => setCopiedIdx(null), 1500);
-    } catch (err) {
+    } catch {
       setError('Failed to copy to clipboard');
     }
   };

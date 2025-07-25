@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { getApiKeys, updateApiKey } from '@/lib/database';
 import { ApiKey, RotationReminder } from '@/types';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const { userId } = await auth();
     

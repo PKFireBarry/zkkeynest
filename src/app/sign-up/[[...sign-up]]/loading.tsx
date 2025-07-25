@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Loading() {
   return (
     <div className="min-h-screen w-full bg-background flex items-center justify-center px-4 py-8">
@@ -31,9 +33,9 @@ export default function Loading() {
         <div className="text-center mt-6">
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
-            <a href="/sign-in" className="text-[#6366f1] hover:text-[#a21caf] font-medium">
+            <Link href="/sign-in" className="text-[#6366f1] hover:text-[#a21caf] font-medium">
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

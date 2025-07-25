@@ -119,11 +119,6 @@ const MIGRATIONS: MigrationFunction[] = [
   }
 ];
 
-// Get current schema version
-export function getCurrentSchemaVersion(): string {
-  return MIGRATIONS[MIGRATIONS.length - 1].version;
-}
-
 // Get pending migrations for a user
 export async function getPendingMigrations(userId: string): Promise<MigrationFunction[]> {
   try {
@@ -294,11 +289,6 @@ export async function repairDataIssues(userId: string): Promise<{
       errors: [`Failed to repair data issues: ${error instanceof Error ? error.message : 'Unknown error'}`]
     };
   }
-}
-
-// Get migration history
-export function getMigrationHistory(): MigrationFunction[] {
-  return MIGRATIONS;
 }
 
 // Check if user needs migration

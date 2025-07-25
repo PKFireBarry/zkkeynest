@@ -1,4 +1,5 @@
 import ClerkLoadingWrapper from "@/components/ClerkLoadingWrapper";
+import Link from "next/link";
 
 export default function SignUpPage() {
   const appearance = {
@@ -36,9 +37,9 @@ export default function SignUpPage() {
         <div className="text-center mt-6">
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
-            <a href="/sign-in" className="text-[#6366f1] hover:text-[#a21caf] font-medium">
+            <Link href="/sign-in" className="text-[#6366f1] hover:text-[#a21caf] font-medium">
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

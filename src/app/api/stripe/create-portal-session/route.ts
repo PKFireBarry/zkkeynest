@@ -6,7 +6,7 @@ import {
 } from '@/lib/stripe';
 import { getUser } from '@/lib/database';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const { userId } = await auth();
     
