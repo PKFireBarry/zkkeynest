@@ -1,26 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { createFeedback, getFeedbacks, deleteFeedback } from '@/lib/database';
 import { validateFeedbackForm } from '@/lib/validation';
-import { isAdmin } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
     const body = await request.json();
+    
+    console.log('Feedback submission attempt:', { body });
+    
     validateFeedbackForm(body);
+
+    // Try to get user ID, but don't fail if user is not logged in
+    let userId = null;
+    try {
+      const authResult = await auth();
+      userId = authResult.userId || null;
+    } catch (authError) {
+      // User is not logged in, continue with anonymous feedback
+      console.log('User not logged in, proceeding with anonymous feedback');
+    }
 
     const feedbackData = {
       ...body,
-      userId: userId || undefined,
+      userId,
     };
+    
+    console.log('Creating feedback with data:', feedbackData);
+    
     const id = await createFeedback(feedbackData);
+    
+    console.log('Feedback created successfully with ID:', id);
+    
     return NextResponse.json({ success: true, id });
   } catch (error) {
+    console.error('Error submitting feedback - Full error:', error);
+    
     if (error instanceof Error && error.name === 'ValidationException') {
+      console.error('Validation error:', error.message);
       return NextResponse.json({ error: error.message, field: (error as any).field }, { status: 400 });
     }
-    console.error('Error submitting feedback:', error);
+    
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

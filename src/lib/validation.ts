@@ -283,11 +283,11 @@ export interface FeedbackForm {
   email?: string;
 }
 
-export function validateFeedbackForm(data: FeedbackForm): void {
+export function validateFeedbackForm(data: any): void {
   if (!data.type || !['bug', 'suggestion', 'other'].includes(data.type)) {
     throw new ValidationException(ValidationError.REQUIRED_FIELD, 'Feedback type is required', 'type');
   }
-  if (!data.message || data.message.trim().length < 10) {
+  if (!data.message || typeof data.message !== 'string' || data.message.trim().length < 10) {
     throw new ValidationException(ValidationError.REQUIRED_FIELD, 'Message must be at least 10 characters', 'message');
   }
   if (data.email && !validateEmail(data.email)) {

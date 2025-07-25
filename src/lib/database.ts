@@ -388,11 +388,20 @@ export async function getUserShares(userId: string): Promise<Share[]> {
 
 // Feedback operations
 export async function createFeedback(feedbackData: Omit<Feedback, 'id' | 'createdAt'>): Promise<string> {
-  const feedbackRef = await addDoc(collection(db, 'feedback'), {
-    ...feedbackData,
-    createdAt: serverTimestamp(),
-  });
-  return feedbackRef.id;
+  try {
+    console.log('Creating feedback document with data:', feedbackData);
+    
+    const feedbackRef = await addDoc(collection(db, 'feedback'), {
+      ...feedbackData,
+      createdAt: serverTimestamp(),
+    });
+    
+    console.log('Feedback document created with ID:', feedbackRef.id);
+    return feedbackRef.id;
+  } catch (error) {
+    console.error('Error in createFeedback:', error);
+    throw error;
+  }
 }
 
 export async function getFeedbacks(): Promise<Feedback[]> {
